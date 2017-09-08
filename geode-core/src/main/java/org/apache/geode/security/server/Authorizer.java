@@ -17,5 +17,7 @@ package org.apache.geode.security.server;
 import org.apache.geode.security.ResourcePermission;
 
 public interface Authorizer {
-  boolean authorize(ResourcePermission permissionRequested);
+  default boolean authorize(ResourcePermission permissionRequested) {
+    return true;
+  }
 }

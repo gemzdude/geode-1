@@ -292,12 +292,7 @@ public class RoundTripCacheConnectionJUnitTest {
 
   @Test
   public void testNewProtocolRespectsMaxConnectionLimit() throws IOException, InterruptedException {
-    cache.getDistributedSystem().disconnect();
-
-    CacheFactory cacheFactory = new CacheFactory();
-    cacheFactory.set(ConfigurationProperties.LOCATORS, "");
-    cacheFactory.set(ConfigurationProperties.MCAST_PORT, "0");
-    cache = cacheFactory.create();
+    cache.getCacheServers().get(0).stop();
 
     CacheServer cacheServer = cache.addCacheServer();
     final int cacheServerPort = AvailablePortHelper.getRandomAvailableTCPPort();

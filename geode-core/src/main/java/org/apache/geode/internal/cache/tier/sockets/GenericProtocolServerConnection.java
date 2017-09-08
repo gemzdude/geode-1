@@ -15,6 +15,7 @@
 
 package org.apache.geode.internal.cache.tier.sockets;
 
+import org.apache.geode.cache.Cache;
 import org.apache.geode.internal.cache.InternalCache;
 import org.apache.geode.internal.cache.tier.Acceptor;
 import org.apache.geode.internal.cache.tier.CachedRegionHelper;
@@ -41,11 +42,15 @@ public class GenericProtocolServerConnection extends ServerConnection {
    * Creates a new <code>GenericProtocolServerConnection</code> that processes messages received
    * from an edge client over a given <code>Socket</code>.
    */
-  public GenericProtocolServerConnection(Socket s, InternalCache c, CachedRegionHelper helper,
-      CacheServerStats stats, int hsTimeout, int socketBufferSize, String communicationModeStr,
-      byte communicationMode, Acceptor acceptor, ClientProtocolMessageHandler newClientProtocol,
-      SecurityService securityService, Authenticator authenticator) {
-    super(s, c, helper, stats, hsTimeout, socketBufferSize, communicationModeStr, communicationMode,
+  GenericProtocolServerConnection(Socket socket, InternalCache cache,
+                                  CachedRegionHelper cachedRegionHelper,
+                                  CacheServerStats cacheServerStats, int hsTimeout,
+                                  int socketBufferSize, String communicationModeStr,
+                                  byte communicationMode, Acceptor acceptor,
+                                  ClientProtocolMessageHandler newClientProtocol,
+                                  SecurityService securityService, Authenticator authenticator) {
+    super(socket, cache, cachedRegionHelper, cacheServerStats, hsTimeout, socketBufferSize,
+        communicationModeStr, communicationMode,
         acceptor, securityService);
     securityManager = securityService.getSecurityManager();
     this.messageHandler = newClientProtocol;
@@ -59,12 +64,9 @@ public class GenericProtocolServerConnection extends ServerConnection {
       InputStream inputStream = socket.getInputStream();
       OutputStream outputStream = socket.getOutputStream();
 
-      if (!authenticator.isAuthenticated()) {
-        authenticator.authenticate(inputStream, outputStream, securityManager);
-      } else {
-        messageHandler.receiveMessage(inputStream, outputStream,
-            new MessageExecutionContext(this.getCache(), authenticator.getAuthorizer()));
-      }
+      authenticator.authenticate(inputStream, outputStream, securityManager);
+      messageHandler.receiveMessage(inputStream, outputStream,
+          new MessageExecutionContext(this.getCache(), authenticator.getAuthorizer()));
     } catch (EOFException e) {
       this.setFlagProcessMessagesAsFalse();
       setClientDisconnectedException(e);

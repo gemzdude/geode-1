@@ -20,6 +20,8 @@ import org.apache.geode.internal.exception.InvalidExecutionContextException;
 import org.apache.geode.internal.protocol.protobuf.ClientProtocol;
 import org.apache.geode.protocol.protobuf.registry.OperationContextRegistry;
 import org.apache.geode.protocol.protobuf.utilities.ProtobufResponseUtilities;
+import org.apache.geode.security.server.Authorizer;
+import org.apache.geode.security.server.NoOpAuthorizer;
 import org.apache.geode.serialization.SerializationService;
 
 /**
@@ -33,22 +35,23 @@ public class ProtobufOpsProcessor {
   private final SerializationService serializationService;
 
   public ProtobufOpsProcessor(SerializationService serializationService,
-      OperationContextRegistry operationContextRegistry) {
+                              OperationContextRegistry operationContextRegistry) {
     this.serializationService = serializationService;
     this.operationContextRegistry = operationContextRegistry;
   }
 
   public ClientProtocol.Response process(ClientProtocol.Request request,
-      MessageExecutionContext context) {
+                                         MessageExecutionContext context) {
     ClientProtocol.Request.RequestAPICase requestType = request.getRequestAPICase();
     OperationContext operationContext = operationContextRegistry.getOperationContext(requestType);
     ClientProtocol.Response.Builder builder;
     Result result;
+    Authorizer authorizer = findAuthorizer(context);
     try {
-      if (context.getAuthorizer().authorize(operationContext.getAccessPermissionRequired())) {
+      if (authorizer.authorize(operationContext.getAccessPermissionRequired())) {
         result = operationContext.getOperationHandler().process(serializationService,
             operationContext.getFromRequest().apply(request), context);
-      } else {
+      } else{
         result = Failure.of(ProtobufResponseUtilities.makeErrorResponse(
             ProtocolErrorCode.AUTHORIZATION_FAILED.codeValue,
             "User isn't authorized for this operation."));
@@ -62,5 +65,16 @@ public class ProtobufOpsProcessor {
     builder = (ClientProtocol.Response.Builder) result.map(operationContext.getToResponse(),
         operationContext.getToErrorResponse());
     return builder.build();
+  }
+
+  private Authorizer findAuthorizer(MessageExecutionContext context) {
+    Authorizer authorizer = context.getAuthorizer();
+    if(authorizer != null)
+    {
+      return authorizer;
+    }else{
+      //TODO Horrible HACK because we need to look this up correctly.
+      return new NoOpAuthorizer();
+    }
   }
 }

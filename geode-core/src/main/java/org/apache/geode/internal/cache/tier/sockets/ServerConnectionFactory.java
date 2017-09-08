@@ -36,8 +36,6 @@ public class ServerConnectionFactory {
   private ClientProtocolMessageHandler protocolHandler;
   private Map<String, Class<? extends Authenticator>> authenticators = null;
 
-  public ServerConnectionFactory() {}
-
   private synchronized void initializeAuthenticatorsMap() {
     if (authenticators != null) {
       return;
@@ -85,23 +83,23 @@ public class ServerConnectionFactory {
     return protocolHandler;
   }
 
-  public ServerConnection makeServerConnection(Socket s, InternalCache c, CachedRegionHelper helper,
-      CacheServerStats stats, int hsTimeout, int socketBufferSize, String communicationModeStr,
+  public ServerConnection makeServerConnection(Socket socket, InternalCache cache, CachedRegionHelper cachedRegionHelper,
+      CacheServerStats cacheServerStats, int hsTimeout, int socketBufferSize, String communicationModeStr,
       byte communicationMode, Acceptor acceptor, SecurityService securityService)
       throws IOException {
-    if (communicationMode == ProtobufClientServerProtocol.getModeNumber()) {
+    if (ProtobufClientServerProtocol.getModeNumber() == communicationMode) {
       if (!Boolean.getBoolean("geode.feature-protobuf-protocol")) {
         throw new IOException("Server received unknown communication mode: " + communicationMode);
       } else {
         String authenticationMode =
             System.getProperty("geode.protocol-authentication-mode", "NOOP");
 
-        return new GenericProtocolServerConnection(s, c, helper, stats, hsTimeout, socketBufferSize,
+        return new GenericProtocolServerConnection(socket, cache, cachedRegionHelper, cacheServerStats, hsTimeout, socketBufferSize,
             communicationModeStr, communicationMode, acceptor, getClientProtocolMessageHandler(),
             securityService, findStreamAuthenticator(authenticationMode));
       }
     } else {
-      return new LegacyServerConnection(s, c, helper, stats, hsTimeout, socketBufferSize,
+      return new LegacyServerConnection(socket, cache, cachedRegionHelper, cacheServerStats, hsTimeout, socketBufferSize,
           communicationModeStr, communicationMode, acceptor, securityService);
     }
   }

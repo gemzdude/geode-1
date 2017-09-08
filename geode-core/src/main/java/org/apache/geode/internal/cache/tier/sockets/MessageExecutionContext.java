@@ -18,9 +18,7 @@ package org.apache.geode.internal.cache.tier.sockets;
 import org.apache.geode.annotations.Experimental;
 import org.apache.geode.cache.Cache;
 import org.apache.geode.distributed.Locator;
-import org.apache.geode.distributed.internal.InternalLocator;
 import org.apache.geode.internal.exception.InvalidExecutionContextException;
-import org.apache.geode.security.server.NoOpAuthorizer;
 import org.apache.geode.security.server.Authorizer;
 
 @Experimental
@@ -34,14 +32,13 @@ public class MessageExecutionContext {
     this.authorizer = streamAuthorizer;
   }
 
-  public MessageExecutionContext(InternalLocator locator) {
+
+  public MessageExecutionContext(Locator locator) {
     this.locator = locator;
-    // set a no-op authorizer until such time as locators implement authentication
-    // and authorization checks
-    this.authorizer = new NoOpAuthorizer();
   }
 
   /**
+
    * Returns the cache associated with this execution
    * <p>
    *

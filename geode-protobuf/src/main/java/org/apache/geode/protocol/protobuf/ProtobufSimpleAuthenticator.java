@@ -30,38 +30,42 @@ import java.util.Properties;
 
 public class ProtobufSimpleAuthenticator implements Authenticator {
   private ProtobufSimpleAuthorizer authorizer = null;
+  private boolean authenticationSuccessfull = false;
 
   @Override
   public void authenticate(InputStream inputStream, OutputStream outputStream,
-      SecurityManager securityManager) throws IOException {
-    AuthenticationAPI.SimpleAuthenticationRequest authenticationRequest =
-        AuthenticationAPI.SimpleAuthenticationRequest.parseDelimitedFrom(inputStream);
-    if (authenticationRequest == null) {
-      throw new EOFException();
-    }
-
-    Properties properties = new Properties();
-    properties.setProperty(ResourceConstants.USER_NAME, authenticationRequest.getUsername());
-    properties.setProperty(ResourceConstants.PASSWORD, authenticationRequest.getPassword());
-
-    authorizer = null; // authenticating a new user clears current authorizer
-    try {
-      Object principal = securityManager.authenticate(properties);
-      if (principal != null) {
-        authorizer = new ProtobufSimpleAuthorizer(principal, securityManager);
+                           SecurityManager securityManager) throws IOException {
+    if (!authenticationSuccessfull) {
+      AuthenticationAPI.SimpleAuthenticationRequest authenticationRequest =
+          AuthenticationAPI.SimpleAuthenticationRequest.parseDelimitedFrom(inputStream);
+      if (authenticationRequest == null) {
+        throw new EOFException();
       }
-    } catch (AuthenticationFailedException e) {
-      authorizer = null;
+
+      Properties properties = new Properties();
+      properties.setProperty(ResourceConstants.USER_NAME, authenticationRequest.getUsername());
+      properties.setProperty(ResourceConstants.PASSWORD, authenticationRequest.getPassword());
+
+      try {
+        Object principal = securityManager.authenticate(properties);
+        if (principal != null) {
+          authenticationSuccessfull = true;
+          authorizer = new ProtobufSimpleAuthorizer(principal, securityManager);
+        }
+      } catch (AuthenticationFailedException e) {
+        authorizer = null;
+      }
+
+      AuthenticationAPI.SimpleAuthenticationResponse.newBuilder()
+          .setAuthenticated(isAuthenticated())
+          .build().writeDelimitedTo(outputStream);
     }
 
-    AuthenticationAPI.SimpleAuthenticationResponse.newBuilder().setAuthenticated(isAuthenticated())
-        .build().writeDelimitedTo(outputStream);
   }
 
   @Override
   public boolean isAuthenticated() {
-    // note: an authorizer is only created if the user has been authenticated
-    return authorizer != null;
+    return authenticationSuccessfull;
   }
 
   @Override
