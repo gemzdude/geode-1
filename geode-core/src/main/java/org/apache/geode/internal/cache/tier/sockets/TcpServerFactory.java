@@ -16,7 +16,9 @@
 package org.apache.geode.internal.cache.tier.sockets;
 
 import java.net.InetAddress;
+import java.util.Iterator;
 import java.util.Properties;
+import java.util.ServiceLoader;
 
 import org.apache.logging.log4j.Logger;
 
@@ -33,7 +35,16 @@ public class TcpServerFactory {
 
   public TcpServerFactory() {
     try {
-      protocolHandler = new MessageHandlerFactory().makeMessageHandler();
+      ServiceLoader<ClientProtocolMessageHandler> loader =
+          ServiceLoader.load(ClientProtocolMessageHandler.class);
+      Iterator<ClientProtocolMessageHandler> iterator = loader.iterator();
+
+      if (!iterator.hasNext()) {
+        throw new ServiceLoadingFailureException(
+            "There is no ClientProtocolMessageHandler implementation found in JVM");
+      }
+
+      protocolHandler = iterator.next();
     } catch (ServiceLoadingFailureException ex) {
       logger.warn(ex.getMessage());
     }

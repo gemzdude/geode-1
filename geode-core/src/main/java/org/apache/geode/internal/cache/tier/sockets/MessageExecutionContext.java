@@ -19,7 +19,7 @@ import org.apache.geode.annotations.Experimental;
 import org.apache.geode.cache.Cache;
 import org.apache.geode.distributed.Locator;
 import org.apache.geode.internal.exception.InvalidExecutionContextException;
-import org.apache.geode.security.server.Authorizer;
+import org.apache.geode.internal.security.server.Authorizer;
 
 @Experimental
 public class MessageExecutionContext {

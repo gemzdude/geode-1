@@ -12,23 +12,12 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+package org.apache.geode.internal.security.server;
 
-package org.apache.geode.internal.cache.tier.sockets;
+import org.apache.geode.annotations.Experimental;
+import org.apache.geode.security.ResourcePermission;
 
-import java.util.Iterator;
-import java.util.ServiceLoader;
-
-public class MessageHandlerFactory {
-  public ClientProtocolMessageHandler makeMessageHandler() {
-    ServiceLoader<ClientProtocolMessageHandler> loader =
-        ServiceLoader.load(ClientProtocolMessageHandler.class);
-    Iterator<ClientProtocolMessageHandler> iterator = loader.iterator();
-
-    if (!iterator.hasNext()) {
-      throw new ServiceLoadingFailureException(
-          "There is no ClientProtocolMessageHandler implementation found in JVM");
-    }
-
-    return iterator.next();
-  }
+@Experimental
+public interface Authorizer {
+  boolean authorize(ResourcePermission permissionRequested);
 }

@@ -1,2 +1,0 @@
-org.apache.geode.protocol.protobuf.ProtobufSimpleAuthenticator
-org.apache.geode.security.server.NoOpAuthenticator

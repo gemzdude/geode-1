@@ -16,7 +16,7 @@ package org.apache.geode.protocol.protobuf;
 
 import org.apache.geode.security.ResourcePermission;
 import org.apache.geode.security.SecurityManager;
-import org.apache.geode.security.server.Authorizer;
+import org.apache.geode.internal.security.server.Authorizer;
 
 public class ProtobufSimpleAuthorizer implements Authorizer {
   private final Object authenticatedPrincipal;

@@ -15,13 +15,13 @@
 
 package org.apache.geode.internal.cache.tier.sockets;
 
-import org.apache.geode.cache.Cache;
 import org.apache.geode.internal.cache.InternalCache;
 import org.apache.geode.internal.cache.tier.Acceptor;
 import org.apache.geode.internal.cache.tier.CachedRegionHelper;
 import org.apache.geode.internal.security.SecurityService;
+import org.apache.geode.internal.security.server.Authenticator;
+import org.apache.geode.internal.security.server.AuthenticatorLookupService;
 import org.apache.geode.security.SecurityManager;
-import org.apache.geode.security.server.Authenticator;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -47,14 +47,15 @@ public class GenericProtocolServerConnection extends ServerConnection {
                                   CacheServerStats cacheServerStats, int hsTimeout,
                                   int socketBufferSize, String communicationModeStr,
                                   byte communicationMode, Acceptor acceptor,
-                                  ClientProtocolMessageHandler newClientProtocol,
-                                  SecurityService securityService, Authenticator authenticator) {
+                                  SecurityService securityService,
+                                  ClientProtocolMessageHandler clientProtocolMessageHandler,
+                                  AuthenticatorLookupService authenticatorLookupService) {
     super(socket, cache, cachedRegionHelper, cacheServerStats, hsTimeout, socketBufferSize,
         communicationModeStr, communicationMode,
         acceptor, securityService);
     securityManager = securityService.getSecurityManager();
-    this.messageHandler = newClientProtocol;
-    this.authenticator = authenticator;
+    this.messageHandler = clientProtocolMessageHandler;
+    this.authenticator = authenticatorLookupService.getAuthenticator();
   }
 
   @Override

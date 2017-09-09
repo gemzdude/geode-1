@@ -12,12 +12,13 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.geode.security.server;
+package org.apache.geode.internal.security.server;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.geode.annotations.Experimental;
 import org.apache.geode.security.AuthenticationRequiredException;
 import org.apache.geode.security.SecurityManager;
 
@@ -28,6 +29,7 @@ import org.apache.geode.security.SecurityManager;
  * If authentication fails, an implementor may continue to wait for another valid authentication
  * exchange.
  */
+@Experimental
 public interface Authenticator {
   /**
    *

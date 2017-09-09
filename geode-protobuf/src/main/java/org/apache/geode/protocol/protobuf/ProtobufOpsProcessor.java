@@ -20,8 +20,8 @@ import org.apache.geode.internal.exception.InvalidExecutionContextException;
 import org.apache.geode.internal.protocol.protobuf.ClientProtocol;
 import org.apache.geode.protocol.protobuf.registry.OperationContextRegistry;
 import org.apache.geode.protocol.protobuf.utilities.ProtobufResponseUtilities;
-import org.apache.geode.security.server.Authorizer;
-import org.apache.geode.security.server.NoOpAuthorizer;
+import org.apache.geode.internal.security.server.Authorizer;
+import org.apache.geode.internal.security.server.NoOpAuthorizer;
 import org.apache.geode.serialization.SerializationService;
 
 /**
