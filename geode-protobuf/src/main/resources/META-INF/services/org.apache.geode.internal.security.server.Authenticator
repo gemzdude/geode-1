@@ -1,1 +1,1 @@
-org.apache.geode.protocol.protobuf.ProtobufSimpleAuthenticator
+org.apache.geode.protocol.protobuf.security.server.ProtobufSimpleAuthenticator

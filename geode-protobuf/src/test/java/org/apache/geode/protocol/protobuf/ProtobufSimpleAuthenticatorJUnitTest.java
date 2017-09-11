@@ -18,6 +18,7 @@ package org.apache.geode.protocol.protobuf;
 import org.apache.geode.examples.security.ExampleSecurityManager;
 import org.apache.geode.management.internal.security.ResourceConstants;
 import org.apache.geode.internal.protocol.protobuf.AuthenticationAPI;
+import org.apache.geode.protocol.protobuf.security.server.ProtobufSimpleAuthenticator;
 import org.apache.geode.security.AuthenticationFailedException;
 import org.apache.geode.security.SecurityManager;
 import org.apache.geode.test.junit.categories.UnitTest;
