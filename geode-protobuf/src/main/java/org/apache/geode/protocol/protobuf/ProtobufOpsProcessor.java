@@ -22,6 +22,8 @@ import org.apache.geode.protocol.protobuf.registry.OperationContextRegistry;
 import org.apache.geode.protocol.protobuf.utilities.ProtobufResponseUtilities;
 import org.apache.geode.internal.security.server.Authorizer;
 import org.apache.geode.internal.security.server.NoOpAuthorizer;
+import org.apache.geode.protocol.responses.Failure;
+import org.apache.geode.protocol.responses.Result;
 import org.apache.geode.serialization.SerializationService;
 
 /**

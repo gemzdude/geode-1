@@ -25,8 +25,8 @@ import org.apache.geode.internal.exception.InvalidExecutionContextException;
 import org.apache.geode.internal.protocol.protobuf.BasicTypes;
 import org.apache.geode.internal.protocol.protobuf.ServerAPI;
 import org.apache.geode.protocol.operations.OperationHandler;
-import org.apache.geode.protocol.protobuf.Result;
-import org.apache.geode.protocol.protobuf.Success;
+import org.apache.geode.protocol.responses.Result;
+import org.apache.geode.protocol.responses.Success;
 import org.apache.geode.serialization.SerializationService;
 
 @Experimental
