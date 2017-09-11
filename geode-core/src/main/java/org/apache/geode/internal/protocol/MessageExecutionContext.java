@@ -13,13 +13,13 @@
  * the License.
  */
 
-package org.apache.geode.internal.cache.tier.sockets;
+package org.apache.geode.internal.protocol;
 
 import org.apache.geode.annotations.Experimental;
 import org.apache.geode.cache.Cache;
 import org.apache.geode.distributed.Locator;
 import org.apache.geode.internal.exception.InvalidExecutionContextException;
-import org.apache.geode.internal.security.server.Authorizer;
+import org.apache.geode.internal.protocol.security.server.Authorizer;
 
 @Experimental
 public class MessageExecutionContext {

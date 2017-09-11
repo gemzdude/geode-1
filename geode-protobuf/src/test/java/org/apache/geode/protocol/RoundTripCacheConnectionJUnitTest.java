@@ -71,7 +71,6 @@ import org.apache.geode.protocol.protobuf.utilities.ProtobufRequestUtilities;
 import org.apache.geode.protocol.protobuf.utilities.ProtobufUtilities;
 import org.apache.geode.serialization.SerializationService;
 import org.apache.geode.serialization.exception.UnsupportedEncodingTypeException;
-import org.apache.geode.serialization.registry.exception.CodecAlreadyRegisteredForTypeException;
 import org.apache.geode.serialization.registry.exception.CodecNotRegisteredForTypeException;
 import org.apache.geode.test.junit.categories.IntegrationTest;
 import org.apache.geode.util.test.TestUtil;
@@ -276,18 +275,16 @@ public class RoundTripCacheConnectionJUnitTest {
 
   @Test
   public void testConnectionCountIsProperlyDecremented() throws Exception {
-    CacheServer cacheServer = this.cache.getCacheServers().stream().findFirst().get();
+    CacheServer cacheServer = this.cache.getCacheServers().get(0);
     AcceptorImpl acceptor = ((CacheServerImpl) cacheServer).getAcceptor();
-    Awaitility.await().atMost(30, TimeUnit.SECONDS).until(() -> {
-      return acceptor.getClientServerCnxCount() == 1;
-    });
+    Awaitility.await().atMost(30, TimeUnit.SECONDS)
+        .until(() -> acceptor.getClientServerCnxCount() == 1);
     // run another test that creates a connection to the server
     testNewProtocolGetRegionNamesCallSucceeds();
     assertFalse(socket.isClosed());
     socket.close();
-    Awaitility.await().atMost(30, TimeUnit.SECONDS).until(() -> {
-      return acceptor.getClientServerCnxCount() == 0;
-    });
+    Awaitility.await().atMost(30, TimeUnit.SECONDS)
+        .until(() -> acceptor.getClientServerCnxCount() == 0);
   }
 
   @Test
@@ -404,8 +401,7 @@ public class RoundTripCacheConnectionJUnitTest {
 
   private void validateGetResponse(Socket socket,
       ProtobufProtocolSerializer protobufProtocolSerializer, Object expectedValue)
-      throws InvalidProtocolMessageException, IOException, UnsupportedEncodingTypeException,
-      CodecNotRegisteredForTypeException, CodecAlreadyRegisteredForTypeException {
+      throws InvalidProtocolMessageException, IOException {
     ClientProtocol.Response response =
         deserializeResponse(socket, protobufProtocolSerializer, TEST_GET_CORRELATION_ID);
 
@@ -457,9 +453,8 @@ public class RoundTripCacheConnectionJUnitTest {
   }
 
   private void validateGetAllResponse(Socket socket,
-      ProtobufProtocolSerializer protobufProtocolSerializer)
-      throws InvalidProtocolMessageException, IOException, UnsupportedEncodingTypeException,
-      CodecNotRegisteredForTypeException, CodecAlreadyRegisteredForTypeException {
+      ProtobufProtocolSerializer protobufProtocolSerializer) throws InvalidProtocolMessageException,
+      IOException, UnsupportedEncodingTypeException, CodecNotRegisteredForTypeException {
     ClientProtocol.Response response =
         deserializeResponse(socket, protobufProtocolSerializer, TEST_GET_CORRELATION_ID);
     assertEquals(ClientProtocol.Response.ResponseAPICase.GETALLRESPONSE,

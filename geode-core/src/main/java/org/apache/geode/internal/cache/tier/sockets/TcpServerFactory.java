@@ -28,6 +28,7 @@ import org.apache.geode.distributed.internal.PoolStatHelper;
 import org.apache.geode.distributed.internal.tcpserver.TcpHandler;
 import org.apache.geode.distributed.internal.tcpserver.TcpServer;
 import org.apache.geode.internal.logging.LogService;
+import org.apache.geode.internal.protocol.ClientProtocolMessageHandler;
 
 public class TcpServerFactory {
   private ClientProtocolMessageHandler protocolHandler;

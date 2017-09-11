@@ -23,8 +23,9 @@ import java.net.Socket;
 import org.apache.geode.internal.cache.InternalCache;
 import org.apache.geode.internal.cache.tier.Acceptor;
 import org.apache.geode.internal.cache.tier.CachedRegionHelper;
+import org.apache.geode.internal.protocol.ProtocolMessageHandlerLookupService;
 import org.apache.geode.internal.security.SecurityService;
-import org.apache.geode.internal.security.server.AuthenticatorLookupService;
+import org.apache.geode.internal.protocol.security.server.AuthenticatorLookupService;
 
 /**
  * Creates instances of ServerConnection based on the connection mode provided.

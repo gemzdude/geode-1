@@ -1,7 +1,9 @@
-package org.apache.geode.internal.cache.tier.sockets;
+package org.apache.geode.internal.protocol;
 
 import java.util.Iterator;
 import java.util.ServiceLoader;
+
+import org.apache.geode.internal.cache.tier.sockets.ServiceLoadingFailureException;
 
 public class ProtocolMessageHandlerLookupService {
   private ClientProtocolMessageHandler protocolHandler;

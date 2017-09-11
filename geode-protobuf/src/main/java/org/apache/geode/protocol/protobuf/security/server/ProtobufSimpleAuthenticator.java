@@ -17,10 +17,10 @@ package org.apache.geode.protocol.protobuf.security.server;
 import org.apache.geode.management.internal.security.ResourceConstants;
 import org.apache.geode.internal.protocol.protobuf.AuthenticationAPI;
 import org.apache.geode.security.AuthenticationRequiredException;
-import org.apache.geode.internal.security.server.Authenticator;
+import org.apache.geode.internal.protocol.security.server.Authenticator;
 import org.apache.geode.security.AuthenticationFailedException;
 import org.apache.geode.security.SecurityManager;
-import org.apache.geode.internal.security.server.Authorizer;
+import org.apache.geode.internal.protocol.security.server.Authorizer;
 
 import java.io.EOFException;
 import java.io.IOException;

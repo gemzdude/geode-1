@@ -18,9 +18,11 @@ package org.apache.geode.internal.cache.tier.sockets;
 import org.apache.geode.internal.cache.InternalCache;
 import org.apache.geode.internal.cache.tier.Acceptor;
 import org.apache.geode.internal.cache.tier.CachedRegionHelper;
+import org.apache.geode.internal.protocol.ClientProtocolMessageHandler;
+import org.apache.geode.internal.protocol.MessageExecutionContext;
+import org.apache.geode.internal.protocol.security.server.Authenticator;
+import org.apache.geode.internal.protocol.security.server.AuthenticatorLookupService;
 import org.apache.geode.internal.security.SecurityService;
-import org.apache.geode.internal.security.server.Authenticator;
-import org.apache.geode.internal.security.server.AuthenticatorLookupService;
 import org.apache.geode.security.SecurityManager;
 
 import java.io.EOFException;
