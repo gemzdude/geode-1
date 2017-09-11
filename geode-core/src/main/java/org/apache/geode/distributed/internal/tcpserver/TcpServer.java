@@ -68,20 +68,27 @@ import org.apache.geode.internal.security.SecurableCommunicationChannel;
 
 /**
  * TCP server which listens on a port and delegates requests to a request handler. The server uses
- * expects messages containing a global version number, followed by a DataSerializable object <p>
+ * expects messages containing a global version number, followed by a DataSerializable object
+ * <p>
  * This code was factored out of GossipServer.java to allow multiple handlers to share the same
  * gossip server port.
+ * 
  * @since GemFire 5.7
  */
 public class TcpServer {
 
   /**
-   * The version of the tcp server protocol <p> This should be incremented if the gossip message
-   * structures change <p> 0 - special indicator of a non-gossip message from a client<br> 1000 -
-   * gemfire 5.5 - using java serialization<br> 1001 - 5.7 - using DataSerializable and supporting
-   * server locator messages.<br> 1002 - 7.1 - sending GemFire version along with GOSSIP_VERSION in
-   * each request. <p> with the addition of support for all old versions of clients you can no
-   * longer change this version number
+   * The version of the tcp server protocol
+   * <p>
+   * This should be incremented if the gossip message structures change
+   * <p>
+   * 0 - special indicator of a non-gossip message from a client<br>
+   * 1000 - gemfire 5.5 - using java serialization<br>
+   * 1001 - 5.7 - using DataSerializable and supporting server locator messages.<br>
+   * 1002 - 7.1 - sending GemFire version along with GOSSIP_VERSION in each request.
+   * <p>
+   * with the addition of support for all old versions of clients you can no longer change this
+   * version number
    */
   public final static int GOSSIPVERSION = 1002;
   public final static int NON_GOSSIP_REQUEST_VERSION = 0;
@@ -144,9 +151,9 @@ public class TcpServer {
   }
 
   public TcpServer(int port, InetAddress bind_address, Properties sslConfig,
-                   DistributionConfigImpl cfg, TcpHandler handler, PoolStatHelper poolHelper,
-                   ThreadGroup threadGroup, String threadName, InternalLocator internalLocator,
-                   ClientProtocolMessageHandler messageHandler) {
+      DistributionConfigImpl cfg, TcpHandler handler, PoolStatHelper poolHelper,
+      ThreadGroup threadGroup, String threadName, InternalLocator internalLocator,
+      ClientProtocolMessageHandler messageHandler) {
     this.port = port;
     this.bind_address = bind_address;
     this.handler = handler;
@@ -179,7 +186,7 @@ public class TcpServer {
   }
 
   private static PooledExecutorWithDMStats createExecutor(PoolStatHelper poolHelper,
-                                                          final ThreadGroup threadGroup) {
+      final ThreadGroup threadGroup) {
     ThreadFactory factory = new ThreadFactory() {
       private final AtomicInteger threadNum = new AtomicInteger();
 
@@ -196,7 +203,7 @@ public class TcpServer {
   }
 
   public void restarting(InternalDistributedSystem ds, InternalCache cache,
-                         ClusterConfigurationService sharedConfig) throws IOException {
+      ClusterConfigurationService sharedConfig) throws IOException {
     this.shuttingDown = false;
     this.handler.restarting(ds, cache, sharedConfig);
     startServerThread();
@@ -266,6 +273,7 @@ public class TcpServer {
   /**
    * Returns the value of the bound port. If the server was initialized with a port of 0 indicating
    * that any ephemeral port should be used, this method will return the actual bound port.
+   * 
    * @return the locator's tcp/ip port. This will be zero if the locator hasn't been started.
    */
   public int getPort() {
@@ -360,8 +368,7 @@ public class TcpServer {
         short versionOrdinal;
         if (gossipVersion == NON_GOSSIP_REQUEST_VERSION) {
           if (input.readUnsignedByte() == CommunicationMode.ProtobufClientServerProtocol
-              .getModeNumber()
-              && Boolean.getBoolean("geode.feature-protobuf-protocol")) {
+              .getModeNumber() && Boolean.getBoolean("geode.feature-protobuf-protocol")) {
             messageHandler.receiveMessage(input, socket.getOutputStream(),
                 new MessageExecutionContext(internalLocator));
           } else {
@@ -526,6 +533,7 @@ public class TcpServer {
 
   /**
    * Returns GossipVersion for older Gemfire versions.
+   * 
    * @return gossip version
    */
   public static int getGossipVersionForOrdinal(short ordinal) {

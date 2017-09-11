@@ -51,12 +51,11 @@ public class GetAllRequestOperationHandler
 
     RegionAPI.GetAllResponse.Builder responseBuilder = RegionAPI.GetAllResponse.newBuilder();
 
-    request.getKeyList().stream()
-        .map((key) -> processOneMessage(serializationService, region, key))
+    request.getKeyList().stream().map((key) -> processOneMessage(serializationService, region, key))
         .forEach(entry -> {
           if (entry instanceof BasicTypes.Entry) {
             responseBuilder.addEntries((BasicTypes.Entry) entry);
-          }else if (entry instanceof BasicTypes.KeyedError) {
+          } else if (entry instanceof BasicTypes.KeyedError) {
             responseBuilder.addFailures((BasicTypes.KeyedError) entry);
           }
         });

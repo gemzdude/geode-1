@@ -43,16 +43,12 @@ public class GenericProtocolServerConnection extends ServerConnection {
    * from an edge client over a given <code>Socket</code>.
    */
   GenericProtocolServerConnection(Socket socket, InternalCache cache,
-                                  CachedRegionHelper cachedRegionHelper,
-                                  CacheServerStats cacheServerStats, int hsTimeout,
-                                  int socketBufferSize, String communicationModeStr,
-                                  byte communicationMode, Acceptor acceptor,
-                                  SecurityService securityService,
-                                  ClientProtocolMessageHandler clientProtocolMessageHandler,
-                                  AuthenticatorLookupService authenticatorLookupService) {
+      CachedRegionHelper cachedRegionHelper, CacheServerStats cacheServerStats, int hsTimeout,
+      int socketBufferSize, String communicationModeStr, byte communicationMode, Acceptor acceptor,
+      SecurityService securityService, ClientProtocolMessageHandler clientProtocolMessageHandler,
+      AuthenticatorLookupService authenticatorLookupService) {
     super(socket, cache, cachedRegionHelper, cacheServerStats, hsTimeout, socketBufferSize,
-        communicationModeStr, communicationMode,
-        acceptor, securityService);
+        communicationModeStr, communicationMode, acceptor, securityService);
     securityManager = securityService.getSecurityManager();
     this.messageHandler = clientProtocolMessageHandler;
     this.authenticator = authenticatorLookupService.getAuthenticator();

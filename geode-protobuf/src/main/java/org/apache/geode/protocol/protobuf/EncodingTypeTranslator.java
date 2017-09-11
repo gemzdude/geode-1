@@ -28,7 +28,8 @@ import org.apache.geode.serialization.exception.UnsupportedEncodingTypeException
  */
 @Experimental
 public abstract class EncodingTypeTranslator {
-  private static final HashMap<Class, BasicTypes.EncodingType> typeToEncodingMap = intializeTypeMap();
+  private static final HashMap<Class, BasicTypes.EncodingType> typeToEncodingMap =
+      intializeTypeMap();
 
   private static HashMap<Class, BasicTypes.EncodingType> intializeTypeMap() {
     HashMap<Class, BasicTypes.EncodingType> result = new HashMap<>();

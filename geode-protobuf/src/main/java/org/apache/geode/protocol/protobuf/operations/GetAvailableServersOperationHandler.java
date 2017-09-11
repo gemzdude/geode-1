@@ -48,9 +48,9 @@ public class GetAvailableServersOperationHandler implements
     ServerAPI.GetAvailableServersResponse.Builder serverResponseBuilder =
         ServerAPI.GetAvailableServersResponse.newBuilder();
 
-    serversFromSnapshot
-        .stream().map(serverLocation -> getServerProtobufMessage((ServerLocation) serverLocation))
-        .forEach( serverMessage -> serverResponseBuilder.addServers((BasicTypes.Server) serverMessage));
+    serversFromSnapshot.stream()
+        .map(serverLocation -> getServerProtobufMessage((ServerLocation) serverLocation)).forEach(
+            serverMessage -> serverResponseBuilder.addServers((BasicTypes.Server) serverMessage));
     return Success.of(serverResponseBuilder.build());
   }
 

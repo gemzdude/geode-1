@@ -34,7 +34,7 @@ public class ProtobufSimpleAuthenticator implements Authenticator {
 
   @Override
   public void authenticate(InputStream inputStream, OutputStream outputStream,
-                           SecurityManager securityManager) throws IOException {
+      SecurityManager securityManager) throws IOException {
     if (!authenticationSuccessfull) {
       AuthenticationAPI.SimpleAuthenticationRequest authenticationRequest =
           AuthenticationAPI.SimpleAuthenticationRequest.parseDelimitedFrom(inputStream);
@@ -57,8 +57,7 @@ public class ProtobufSimpleAuthenticator implements Authenticator {
       }
 
       AuthenticationAPI.SimpleAuthenticationResponse.newBuilder()
-          .setAuthenticated(isAuthenticated())
-          .build().writeDelimitedTo(outputStream);
+          .setAuthenticated(isAuthenticated()).build().writeDelimitedTo(outputStream);
     }
 
   }

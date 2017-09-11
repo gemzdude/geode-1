@@ -38,20 +38,24 @@ public class ServerConnectionFactory {
     authenticatorLookupService = new AuthenticatorLookupService();
   }
 
-  public ServerConnection makeServerConnection(Socket socket, InternalCache cache, CachedRegionHelper cachedRegionHelper,
-                                               CacheServerStats cacheServerStats, int hsTimeout, int socketBufferSize, String communicationModeStr,
-                                               byte communicationMode, Acceptor acceptor, SecurityService securityService)
-      throws IOException {
+  public ServerConnection makeServerConnection(Socket socket, InternalCache cache,
+      CachedRegionHelper cachedRegionHelper, CacheServerStats cacheServerStats, int hsTimeout,
+      int socketBufferSize, String communicationModeStr, byte communicationMode, Acceptor acceptor,
+      SecurityService securityService) throws IOException {
     if (ProtobufClientServerProtocol.getModeNumber() == communicationMode) {
       if (!Boolean.getBoolean("geode.feature-protobuf-protocol")) {
         throw new IOException("Server received unknown communication mode: " + communicationMode);
       } else {
-        return new GenericProtocolServerConnection(socket, cache, cachedRegionHelper, cacheServerStats, hsTimeout, socketBufferSize,
-            communicationModeStr, communicationMode, acceptor, securityService, protocolMessageHandlerLookupService.lookupProtocolHandler("protobuf"),authenticatorLookupService);
+        return new GenericProtocolServerConnection(socket, cache, cachedRegionHelper,
+            cacheServerStats, hsTimeout, socketBufferSize, communicationModeStr, communicationMode,
+            acceptor, securityService,
+            protocolMessageHandlerLookupService.lookupProtocolHandler("protobuf"),
+            authenticatorLookupService);
       }
     } else {
-      return new LegacyServerConnection(socket, cache, cachedRegionHelper, cacheServerStats, hsTimeout, socketBufferSize,
-          communicationModeStr, communicationMode, acceptor, securityService);
+      return new LegacyServerConnection(socket, cache, cachedRegionHelper, cacheServerStats,
+          hsTimeout, socketBufferSize, communicationModeStr, communicationMode, acceptor,
+          securityService);
     }
   }
 }

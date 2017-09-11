@@ -30,7 +30,8 @@ public class AuthenticatorLookupService {
   public Authenticator getAuthenticator() {
     String authenticationMode = System.getProperty("geode.protocol-authentication-mode", "NOOP");
 
-    Class<? extends Authenticator> streamAuthenticatorClass = authenticators.get(authenticationMode);
+    Class<? extends Authenticator> streamAuthenticatorClass =
+        authenticators.get(authenticationMode);
     if (streamAuthenticatorClass == null) {
       throw new GemFireConfigException(
           "Could not find implementation for Authenticator with implementation ID "

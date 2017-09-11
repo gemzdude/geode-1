@@ -24,7 +24,7 @@ public class ProtocolMessageHandlerLookupService {
   }
 
   public ClientProtocolMessageHandler lookupProtocolHandler(String protocolType) {
-    //TODO Do we need to make provision for different protocols here right now?
+    // TODO Do we need to make provision for different protocols here right now?
     return protocolHandler;
   }
 }

@@ -55,7 +55,8 @@ public class PutAllRequestOperationHandler
 
     RegionAPI.PutAllResponse.Builder builder = RegionAPI.PutAllResponse.newBuilder();
     putAllRequest.getEntryList().stream()
-            .map((entry) -> singlePut(serializationService, region, entry)).filter(Objects::nonNull).forEach(failedKey -> builder.addFailedKeys(failedKey));
+        .map((entry) -> singlePut(serializationService, region, entry)).filter(Objects::nonNull)
+        .forEach(failedKey -> builder.addFailedKeys(failedKey));
     return Success.of(builder.build());
   }
 
