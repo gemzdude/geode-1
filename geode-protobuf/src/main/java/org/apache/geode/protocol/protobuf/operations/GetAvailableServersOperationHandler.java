@@ -14,19 +14,18 @@
  */
 package org.apache.geode.protocol.protobuf.operations;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.geode.annotations.Experimental;
 import org.apache.geode.distributed.internal.InternalLocator;
 import org.apache.geode.distributed.internal.ServerLocation;
 import org.apache.geode.internal.cache.tier.sockets.MessageExecutionContext;
 import org.apache.geode.internal.exception.InvalidExecutionContextException;
-import org.apache.geode.protocol.operations.OperationHandler;
 import org.apache.geode.internal.protocol.protobuf.BasicTypes;
-import org.apache.geode.protocol.protobuf.Result;
 import org.apache.geode.internal.protocol.protobuf.ServerAPI;
+import org.apache.geode.protocol.operations.OperationHandler;
+import org.apache.geode.protocol.protobuf.Result;
 import org.apache.geode.protocol.protobuf.Success;
 import org.apache.geode.serialization.SerializationService;
 
@@ -40,18 +39,19 @@ public class GetAvailableServersOperationHandler implements
       MessageExecutionContext executionContext) throws InvalidExecutionContextException {
 
     InternalLocator internalLocator = (InternalLocator) executionContext.getLocator();
-    ArrayList serversFromSnapshot =
+    List serversFromSnapshot =
         internalLocator.getServerLocatorAdvisee().getLoadSnapshot().getServers(null);
     if (serversFromSnapshot == null) {
-      serversFromSnapshot = new ArrayList();
+      serversFromSnapshot = Collections.EMPTY_LIST;
     }
 
-    Collection<BasicTypes.Server> servers = (Collection<BasicTypes.Server>) serversFromSnapshot
+    ServerAPI.GetAvailableServersResponse.Builder serverResponseBuilder =
+        ServerAPI.GetAvailableServersResponse.newBuilder();
+
+    serversFromSnapshot
         .stream().map(serverLocation -> getServerProtobufMessage((ServerLocation) serverLocation))
-        .collect(Collectors.toList());
-    ServerAPI.GetAvailableServersResponse.Builder builder =
-        ServerAPI.GetAvailableServersResponse.newBuilder().addAllServers(servers);
-    return Success.of(builder.build());
+        .forEach( serverMessage -> serverResponseBuilder.addServers((BasicTypes.Server) serverMessage));
+    return Success.of(serverResponseBuilder.build());
   }
 
   private BasicTypes.Server getServerProtobufMessage(ServerLocation serverLocation) {

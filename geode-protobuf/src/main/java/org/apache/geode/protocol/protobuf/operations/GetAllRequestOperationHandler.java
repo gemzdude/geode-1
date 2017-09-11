@@ -53,18 +53,17 @@ public class GetAllRequestOperationHandler
           .makeErrorResponse(ProtocolErrorCode.REGION_NOT_FOUND.codeValue, "Region not found"));
     }
 
-    Map<Boolean, List<Object>> resultsCollection = request.getKeyList().stream()
-        .map((key) -> processOneMessage(serializationService, region, key))
-        .collect(Collectors.partitioningBy(x -> x instanceof BasicTypes.Entry));
     RegionAPI.GetAllResponse.Builder responseBuilder = RegionAPI.GetAllResponse.newBuilder();
 
-    for (Object entry : resultsCollection.get(true)) {
-      responseBuilder.addEntries((BasicTypes.Entry) entry);
-    }
-
-    for (Object entry : resultsCollection.get(false)) {
-      responseBuilder.addFailures((BasicTypes.KeyedError) entry);
-    }
+    request.getKeyList().stream()
+        .map((key) -> processOneMessage(serializationService, region, key))
+        .forEach(entry -> {
+          if (entry instanceof BasicTypes.Entry) {
+            responseBuilder.addEntries((BasicTypes.Entry) entry);
+          }else if (entry instanceof BasicTypes.KeyedError) {
+            responseBuilder.addFailures((BasicTypes.KeyedError) entry);
+          }
+        });
 
     return Success.of(responseBuilder.build());
   }

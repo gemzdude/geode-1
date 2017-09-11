@@ -54,10 +54,9 @@ public class PutAllRequestOperationHandler
           "Region passed by client did not exist: " + putAllRequest.getRegionName(), logger, null));
     }
 
-    RegionAPI.PutAllResponse.Builder builder = RegionAPI.PutAllResponse.newBuilder()
-        .addAllFailedKeys(putAllRequest.getEntryList().stream()
-            .map((entry) -> singlePut(serializationService, region, entry)).filter(Objects::nonNull)
-            .collect(Collectors.toList()));
+    RegionAPI.PutAllResponse.Builder builder = RegionAPI.PutAllResponse.newBuilder();
+    putAllRequest.getEntryList().stream()
+            .map((entry) -> singlePut(serializationService, region, entry)).filter(Objects::nonNull).forEach(failedKey -> builder.addFailedKeys(failedKey));
     return Success.of(builder.build());
   }
 
