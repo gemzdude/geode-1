@@ -126,6 +126,9 @@ public class RoundTripCacheConnectionJUnitTest {
     cacheFactory.set(ConfigurationProperties.MCAST_PORT, "0");
     cacheFactory.set(ConfigurationProperties.ENABLE_CLUSTER_CONFIGURATION, "false");
     cacheFactory.set(ConfigurationProperties.USE_CLUSTER_CONFIGURATION, "false");
+    cacheFactory.set(ConfigurationProperties.STATISTIC_SAMPLING_ENABLED, "true");
+    cacheFactory.set(ConfigurationProperties.STATISTIC_SAMPLE_RATE, "100");
+    cacheFactory.set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, getClass().getSimpleName()+"_"+testName.getMethodName()+".gfs");
     cache = cacheFactory.create();
 
     CacheServer cacheServer = cache.addCacheServer();
@@ -208,6 +211,7 @@ public class RoundTripCacheConnectionJUnitTest {
         ProtobufUtilities.createProtobufRequestWithGetAllRequest(getAllRequest));
     protobufProtocolSerializer.serialize(getAllMessage, outputStream);
     validateGetAllResponse(socket, protobufProtocolSerializer);
+    Thread.sleep(3000);
   }
 
   @Test
@@ -297,6 +301,9 @@ public class RoundTripCacheConnectionJUnitTest {
     CacheFactory cacheFactory = new CacheFactory();
     cacheFactory.set(ConfigurationProperties.LOCATORS, "");
     cacheFactory.set(ConfigurationProperties.MCAST_PORT, "0");
+    cacheFactory.set(ConfigurationProperties.STATISTIC_SAMPLING_ENABLED, "true");
+    cacheFactory.set(ConfigurationProperties.STATISTIC_SAMPLE_RATE, "100");
+    cacheFactory.set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, getClass().getSimpleName()+"_"+testName.getMethodName()+".gfs");
     cache = cacheFactory.create();
 
     CacheServer cacheServer = cache.addCacheServer();
@@ -326,6 +333,7 @@ public class RoundTripCacheConnectionJUnitTest {
       assertEquals(-1, socket.getInputStream().read()); // EOF implies disconnected.
     }
 
+    Thread.sleep(15000);
     for (Socket currentSocket : sockets) {
       currentSocket.close();
     }

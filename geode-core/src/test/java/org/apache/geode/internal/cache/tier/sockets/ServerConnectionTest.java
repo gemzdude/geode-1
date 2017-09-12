@@ -84,7 +84,8 @@ public class ServerConnectionTest {
 
     serverConnection =
         new ServerConnectionFactory().makeServerConnection(socket, cache, null, null, 0, 0, null,
-            CommunicationMode.PrimaryServerToClient.getModeNumber(), acceptor, securityService);
+            CommunicationMode.PrimaryServerToClient.getModeNumber(), acceptor, securityService,
+            InetAddress.getLocalHost());
     MockitoAnnotations.initMocks(this);
   }
 
