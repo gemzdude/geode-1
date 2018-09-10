@@ -31,11 +31,13 @@ import org.apache.geode.distributed.internal.InternalConfigurationPersistenceSer
 import org.apache.geode.internal.logging.LogService;
 import org.apache.geode.management.cli.CliMetaData;
 import org.apache.geode.management.cli.SingleGfshCommand;
+import org.apache.geode.management.internal.cli.AbstractCliAroundInterceptor;
 import org.apache.geode.management.internal.cli.exceptions.EntityExistsException;
 import org.apache.geode.management.internal.cli.functions.CliFunctionResult;
 import org.apache.geode.management.internal.cli.functions.CreateJndiBindingFunction;
 import org.apache.geode.management.internal.cli.i18n.CliStrings;
 import org.apache.geode.management.internal.cli.result.model.ResultModel;
+import org.apache.geode.management.internal.cli.shell.Gfsh;
 import org.apache.geode.management.internal.security.ResourceOperation;
 import org.apache.geode.security.ResourcePermission;
 
@@ -94,8 +96,12 @@ public class CreateJndiBindingCommand extends SingleGfshCommand {
   static final String DATASOURCE_CONFIG_PROPERTIES_HELP =
       "Properties for the custom XADataSource driver. Append json string containing (name, type, value) to set any property. Eg: --datasource-config-properties={'name':'name1','type':'type1','value':'value1'},{'name':'name2','type':'type2','value':'value2'}";
 
+  static String usernameOverride;
+  static String passwordOverride;
+
   @CliCommand(value = CREATE_JNDIBINDING, help = CREATE_JNDIBINDING__HELP)
-  @CliMetaData(relatedTopic = CliStrings.TOPIC_GEODE_REGION)
+  @CliMetaData(relatedTopic = {CliStrings.TOPIC_GEODE_REGION},
+      interceptor = "org.apache.geode.management.internal.cli.commands.CreateJndiBindingCommand$CreateJndiBindingCommandInterceptor")
   @ResourceOperation(resource = ResourcePermission.Resource.CLUSTER,
       operation = ResourcePermission.Operation.MANAGE)
   public ResultModel createJDNIBinding(
@@ -124,6 +130,11 @@ public class CreateJndiBindingCommand extends SingleGfshCommand {
           specifiedDefaultValue = "true", unspecifiedDefaultValue = "false") boolean ifNotExists,
       @CliOption(key = DATASOURCE_CONFIG_PROPERTIES, optionContext = "splittingRegex=,(?![^{]*\\})",
           help = DATASOURCE_CONFIG_PROPERTIES_HELP) JndiBindingsType.JndiBinding.ConfigProperty[] dsConfigProperties) {
+
+    if (usernameOverride != null)
+      username = usernameOverride;
+    if (passwordOverride != null)
+      password = passwordOverride;
 
     JndiBindingsType.JndiBinding configuration = new JndiBindingsType.JndiBinding();
     configuration.setBlockingTimeoutSeconds(Objects.toString(blockingTimeout, null));
@@ -195,6 +206,31 @@ public class CreateJndiBindingCommand extends SingleGfshCommand {
 
     public String getName() {
       return name();
+    }
+  }
+  public static class CreateJndiBindingCommandInterceptor extends AbstractCliAroundInterceptor {
+    @Override
+    public org.apache.geode.management.cli.Result preExecution(
+        org.apache.geode.management.internal.cli.GfshParseResult parseResult) {
+
+      String username = parseResult.getParamValueAsString(USERNAME);
+      String password = parseResult.getParamValueAsString(PASSWORD);
+
+      Gfsh gfsh = Gfsh.getCurrentInstance();
+
+      if (username == null) {
+        usernameOverride = gfsh.readText("User: ");
+        passwordOverride = gfsh.readPassword("Password: ");
+      } else if (password == null) {
+        usernameOverride = null;
+        passwordOverride = gfsh.readPassword("Password: ");
+      } else {
+        usernameOverride = null;
+        passwordOverride = null;
+      }
+
+      return org.apache.geode.management.internal.cli.result.ResultBuilder
+          .createInfoResult("DOIT!");
     }
   }
 }
