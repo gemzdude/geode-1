@@ -14,28 +14,45 @@
  */
 package org.apache.geode.management.internal.cli.commands;
 
+import static org.apache.geode.management.internal.cli.i18n.CliStrings.LIST_MEMBER;
+import static org.apache.geode.management.internal.cli.i18n.CliStrings.STATUS_LOCATOR;
+import static org.apache.geode.management.internal.cli.result.InfoResultData.RESULT_CONTENT_MESSAGE;
+import static org.apache.geode.management.internal.cli.result.ResultData.RESULT_CONTENT;
+import static org.apache.geode.management.internal.cli.shell.Gfsh.ENV_APP_QUIET_EXECUTION;
+
+import java.net.InetSocketAddress;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.springframework.shell.ShellException;
+import org.springframework.shell.core.CommandResult;
 import org.springframework.shell.core.annotation.CliCommand;
 import org.springframework.shell.core.annotation.CliOption;
 
+import org.apache.geode.cache.client.ClientCache;
+import org.apache.geode.cache.client.ClientCacheFactory;
 import org.apache.geode.cache.configuration.CacheConfig;
-import org.apache.geode.cache.configuration.CacheElement;
 import org.apache.geode.cache.configuration.JndiBindingsType;
 import org.apache.geode.distributed.DistributedMember;
-import org.apache.geode.distributed.internal.InternalConfigurationPersistenceService;
 import org.apache.geode.internal.logging.LogService;
 import org.apache.geode.management.cli.CliMetaData;
 import org.apache.geode.management.cli.SingleGfshCommand;
-import org.apache.geode.management.internal.cli.exceptions.EntityExistsException;
 import org.apache.geode.management.internal.cli.functions.CliFunctionResult;
 import org.apache.geode.management.internal.cli.functions.CreateJndiBindingFunction;
 import org.apache.geode.management.internal.cli.i18n.CliStrings;
+import org.apache.geode.management.internal.cli.result.InfoResultData;
+import org.apache.geode.management.internal.cli.result.LegacyCommandResult;
+import org.apache.geode.management.internal.cli.result.ModelCommandResult;
 import org.apache.geode.management.internal.cli.result.model.ResultModel;
+import org.apache.geode.management.internal.cli.shell.Gfsh;
 import org.apache.geode.management.internal.security.ResourceOperation;
 import org.apache.geode.security.ResourcePermission;
 
@@ -95,7 +112,7 @@ public class CreateJndiBindingCommand extends SingleGfshCommand {
       "Properties for the custom XADataSource driver. Append json string containing (name, type, value) to set any property. Eg: --datasource-config-properties={'name':'name1','type':'type1','value':'value1'},{'name':'name2','type':'type2','value':'value2'}";
 
   @CliCommand(value = CREATE_JNDIBINDING, help = CREATE_JNDIBINDING__HELP)
-  @CliMetaData(relatedTopic = CliStrings.TOPIC_GEODE_REGION)
+  @CliMetaData(relatedTopic = CliStrings.TOPIC_GEODE_REGION, requireLocalExecution = true)
   @ResourceOperation(resource = ResourcePermission.Resource.CLUSTER,
       operation = ResourcePermission.Operation.MANAGE)
   public ResultModel createJDNIBinding(
@@ -141,27 +158,101 @@ public class CreateJndiBindingCommand extends SingleGfshCommand {
     configuration.setType(type.getType());
     configuration.setUserName(username);
     configuration.setXaDatasourceClass(xaDataSource);
+
+    Gfsh gfsh = Gfsh.getCurrentInstance();
+
+    if (gfsh == null) {
+      throw new ShellException("Error when attempting to access local shell");
+    }
+
+    if (username == null) {
+      username = gfsh.readText("Username: ");
+    }
+
+    if (password == null) {
+      // gfsh.readPassword("Password");
+    }
+
     if (dsConfigProperties != null && dsConfigProperties.length > 0)
       configuration.getConfigProperties().addAll(Arrays.asList(dsConfigProperties));
 
-    InternalConfigurationPersistenceService service =
-        (InternalConfigurationPersistenceService) getConfigurationPersistenceService();
+    // gfsh.setEnvProperty(ENV_APP_QUIET_EXECUTION, "true");
+    CommandResult cmdResult = gfsh.executeCommand(LIST_MEMBER);
 
-    if (service != null) {
-      CacheConfig cacheConfig = service.getCacheConfig("cluster");
-      if (cacheConfig != null) {
-        JndiBindingsType.JndiBinding existing =
-            CacheElement.findElement(cacheConfig.getJndiBindings(), jndiName);
-        if (existing != null) {
-          throw new EntityExistsException(
-              CliStrings.format("Jndi binding with jndi-name \"{0}\" already exists.", jndiName),
-              ifNotExists);
-        }
+    // assertThat(result.getStatus()).isEqualTo(Result.Status.OK);
+
+    Map<String, List<String>> table =
+        ((ModelCommandResult) cmdResult.getResult())
+            .getMapFromTableContent(ListMembersCommand.MEMBERS_SECTION);
+
+    String locatorName = null;
+    List<String> ids = table.get("Id");
+    List<String> names = table.get("Name");
+    for (int i = 0; i < ids.size() && i < names.size(); i++) {
+      if (ids.get(i).contains("[Coordinator]")) {
+        locatorName = names.get(i);
+        break;
+      }
+    }
+    if (locatorName == null) {
+      return ResultModel.createInfo("No coordinator found.");
+    }
+
+    cmdResult = gfsh.executeCommand(STATUS_LOCATOR + " --name=" + locatorName);
+    gfsh.setEnvProperty(ENV_APP_QUIET_EXECUTION, "false");
+
+    InfoResultData infoResultData =
+        (InfoResultData) ((LegacyCommandResult) cmdResult.getResult()).getResultData();
+    String locatorStatus =
+        ((JSONArray) infoResultData.getGfJsonObject().getJSONObject(RESULT_CONTENT)
+            .get(RESULT_CONTENT_MESSAGE)).toString();
+
+    gfsh.printAsInfo(locatorName + ": " + locatorStatus);
+
+    Pattern MY_PATTERN = Pattern.compile(locatorName + " on (.*?)\\[(.*?)\\]");
+    // MY_PATTERN = Pattern.compile(username);
+
+    String locatorHost = null;
+    String locatorPort = null;
+    Matcher m = MY_PATTERN.matcher(locatorStatus);
+    while (m.find()) {
+      locatorHost = m.group(1);
+      locatorPort = m.group(2);
+    }
+    gfsh.printAsInfo("OUTPUT: " + locatorHost + " OUT2: " + locatorPort);
+
+
+    // assertThat(table.get("Name").size()).isEqualTo(4);
+    // assertThat(table.get("Name")).contains("locator-0", "server-1", "server-2", "server-3");
+    // InternalConfigurationPersistenceService service =
+    // (InternalConfigurationPersistenceService) getConfigurationPersistenceService();
+    //
+    // if (service != null) {
+    // CacheConfig cacheConfig = service.getCacheConfig("cluster");
+    // if (cacheConfig != null) {
+    // JndiBindingsType.JndiBinding existing =
+    // CacheElement.findElement(cacheConfig.getJndiBindings(), jndiName);
+    // if (existing != null) {
+    // throw new EntityExistsException(
+    // CliStrings.format("Jndi binding with jndi-name \"{0}\" already exists.", jndiName),
+    // ifNotExists);
+    // }
+    // }
+    // }
+
+    ClientCache cache = new ClientCacheFactory()
+        .addPoolLocator(locatorHost, Integer.parseInt(locatorPort)).create();
+
+    Set<DistributedMember> targetMembers = new HashSet();
+
+    for (InetSocketAddress iSockAddr : cache.getCurrentServers()) {
+      for (DistributedMember dist : cache.getDistributedSystem()
+          .findDistributedMembers(iSockAddr.getAddress())) {
+        targetMembers.add(dist);
       }
     }
 
-    Set<DistributedMember> targetMembers = findMembers(null, null);
-    if (targetMembers.size() > 0) {
+    if (targetMembers != null && targetMembers.size() > 0) {
       List<CliFunctionResult> jndiCreationResult = executeAndGetFunctionResult(
           new CreateJndiBindingFunction(), configuration, targetMembers);
       ResultModel result = ResultModel.createMemberStatusResult(jndiCreationResult);

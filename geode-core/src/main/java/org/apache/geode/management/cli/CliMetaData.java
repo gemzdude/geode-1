@@ -41,7 +41,7 @@ public @interface CliMetaData {
    * Indicates that the command will only run in the gfsh shell Gfsh ExecutionStrategy will use this
    * flag to determine whether to invoke remote call or not.
    **/
-  boolean shellOnly() default false;
+  boolean requireLocalExecution() default false;
 
   /**
    * Indicates when executed over http, is this command downloading files from the member. When this

@@ -163,7 +163,7 @@ public class CommandManagerJUnitTest {
   public static class Commands implements CommandMarker {
 
     @CliCommand(value = {COMMAND1_NAME, COMMAND1_NAME_ALIAS}, help = COMMAND1_HELP)
-    @CliMetaData(shellOnly = true, relatedTopic = {"relatedTopicOfCommand1"})
+    @CliMetaData(requireLocalExecution = true, relatedTopic = {"relatedTopicOfCommand1"})
     @ResourceOperation(resource = Resource.CLUSTER, operation = Operation.READ)
     public static String command1(
         @CliOption(key = ARGUMENT1_NAME, optionContext = ARGUMENT1_CONTEXT, help = ARGUMENT1_HELP,

@@ -37,7 +37,7 @@ import org.apache.geode.management.internal.cli.util.DiskStoreValidater;
 
 public class ValidateDiskStoreCommand extends InternalGfshCommand {
   @CliCommand(value = CliStrings.VALIDATE_DISK_STORE, help = CliStrings.VALIDATE_DISK_STORE__HELP)
-  @CliMetaData(shellOnly = true, relatedTopic = {CliStrings.TOPIC_GEODE_DISKSTORE})
+  @CliMetaData(requireLocalExecution = true, relatedTopic = {CliStrings.TOPIC_GEODE_DISKSTORE})
   public ResultModel validateDiskStore(
       @CliOption(key = CliStrings.VALIDATE_DISK_STORE__NAME, mandatory = true,
           help = CliStrings.VALIDATE_DISK_STORE__NAME__HELP) String diskStoreName,

@@ -33,7 +33,7 @@ import org.apache.geode.management.internal.cli.result.ResultBuilder;
 public class DescribeOfflineDiskStoreCommand extends InternalGfshCommand {
   @CliCommand(value = CliStrings.DESCRIBE_OFFLINE_DISK_STORE,
       help = CliStrings.DESCRIBE_OFFLINE_DISK_STORE__HELP)
-  @CliMetaData(shellOnly = true, relatedTopic = {CliStrings.TOPIC_GEODE_DISKSTORE})
+  @CliMetaData(requireLocalExecution = true, relatedTopic = {CliStrings.TOPIC_GEODE_DISKSTORE})
   public Result describeOfflineDiskStore(
       @CliOption(key = CliStrings.DESCRIBE_OFFLINE_DISK_STORE__DISKSTORENAME, mandatory = true,
           help = CliStrings.DESCRIBE_OFFLINE_DISK_STORE__DISKSTORENAME__HELP) String diskStoreName,

@@ -29,6 +29,8 @@ import org.apache.geode.management.internal.cli.i18n.CliStrings;
 
 public class CreateJndiBindingFunction extends CliFunction<JndiBindingsType.JndiBinding> {
 
+  public static final String ID = CreateJndiBindingFunction.class.getCanonicalName();
+
   static final String RESULT_MESSAGE =
       "Initiated jndi binding \"{0}\" on \"{1}\". See server logs to verify.";
 

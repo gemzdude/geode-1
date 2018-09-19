@@ -38,7 +38,7 @@ import org.apache.geode.management.internal.cli.shell.OperationInvoker;
 public class StartPulseCommand extends InternalGfshCommand {
 
   @CliCommand(value = CliStrings.START_PULSE, help = CliStrings.START_PULSE__HELP)
-  @CliMetaData(shellOnly = true, relatedTopic = {CliStrings.TOPIC_GEODE_MANAGER,
+  @CliMetaData(requireLocalExecution = true, relatedTopic = {CliStrings.TOPIC_GEODE_MANAGER,
       CliStrings.TOPIC_GEODE_JMX, CliStrings.TOPIC_GEODE_M_AND_M})
   public Result startPulse(@CliOption(key = CliStrings.START_PULSE__URL,
       unspecifiedDefaultValue = "http://localhost:7070/pulse",

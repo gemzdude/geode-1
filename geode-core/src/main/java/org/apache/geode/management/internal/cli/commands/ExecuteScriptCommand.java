@@ -29,7 +29,7 @@ import org.apache.geode.management.internal.cli.shell.Gfsh;
 
 public class ExecuteScriptCommand extends InternalGfshCommand {
   @CliCommand(value = {CliStrings.RUN}, help = CliStrings.RUN__HELP)
-  @CliMetaData(shellOnly = true, relatedTopic = {CliStrings.TOPIC_GFSH})
+  @CliMetaData(requireLocalExecution = true, relatedTopic = {CliStrings.TOPIC_GFSH})
   public Result executeScript(
       @CliOption(key = CliStrings.RUN__FILE, optionContext = ConverterHint.FILE, mandatory = true,
           help = CliStrings.RUN__FILE__HELP) File file,

@@ -30,7 +30,7 @@ import org.apache.geode.management.internal.cli.result.model.ResultModel;
 public class ExportOfflineDiskStoreCommand extends InternalGfshCommand {
   @CliCommand(value = CliStrings.EXPORT_OFFLINE_DISK_STORE,
       help = CliStrings.EXPORT_OFFLINE_DISK_STORE__HELP)
-  @CliMetaData(shellOnly = true, relatedTopic = {CliStrings.TOPIC_GEODE_DISKSTORE})
+  @CliMetaData(requireLocalExecution = true, relatedTopic = {CliStrings.TOPIC_GEODE_DISKSTORE})
   public ResultModel exportOfflineDiskStore(
       @CliOption(key = CliStrings.EXPORT_OFFLINE_DISK_STORE__DISKSTORENAME, mandatory = true,
           help = CliStrings.EXPORT_OFFLINE_DISK_STORE__DISKSTORENAME__HELP) String diskStoreName,

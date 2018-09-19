@@ -52,7 +52,7 @@ public class StartServerCommand extends InternalGfshCommand {
   private static final String SERVER_TERM_NAME = "Server";
 
   @CliCommand(value = CliStrings.START_SERVER, help = CliStrings.START_SERVER__HELP)
-  @CliMetaData(shellOnly = true,
+  @CliMetaData(requireLocalExecution = true,
       relatedTopic = {CliStrings.TOPIC_GEODE_SERVER, CliStrings.TOPIC_GEODE_LIFECYCLE})
   public Result startServer(
       @CliOption(key = CliStrings.START_SERVER__NAME,

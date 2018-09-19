@@ -34,7 +34,7 @@ import org.apache.geode.management.internal.cli.shell.OperationInvoker;
  *
  * <p>
  * Some commands are required to be executed on a remote GemFire managing member. These should be
- * marked with the annotation {@link CliMetaData#shellOnly()} set to <code>false</code>.
+ * marked with the annotation {@link CliMetaData#requireLocalExecution()} set to <code>false</code>.
  * {@link GfshExecutionStrategy} will detect whether the command is a remote command and send it to
  * ManagementMBean via {@link OperationInvoker}.
  *

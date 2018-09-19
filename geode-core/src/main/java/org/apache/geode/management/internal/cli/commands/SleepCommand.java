@@ -26,7 +26,7 @@ import org.apache.geode.management.internal.cli.result.ResultBuilder;
 
 public class SleepCommand extends InternalGfshCommand {
   @CliCommand(value = {CliStrings.SLEEP}, help = CliStrings.SLEEP__HELP)
-  @CliMetaData(shellOnly = true, relatedTopic = {CliStrings.TOPIC_GFSH})
+  @CliMetaData(requireLocalExecution = true, relatedTopic = {CliStrings.TOPIC_GFSH})
   public Result sleep(@CliOption(key = {CliStrings.SLEEP__TIME}, unspecifiedDefaultValue = "3",
       help = CliStrings.SLEEP__TIME__HELP) double time) {
     try {

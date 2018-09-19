@@ -104,17 +104,17 @@ public class GfshExecutionStrategyTest {
    * represents class for dummy methods
    */
   public static class Commands implements CommandMarker {
-    @CliMetaData(shellOnly = true)
+    @CliMetaData(requireLocalExecution = true)
     public Result offlineCommand() {
       return ResultBuilder.createInfoResult(COMMAND1_SUCCESS);
     }
 
-    @CliMetaData(shellOnly = true)
+    @CliMetaData(requireLocalExecution = true)
     public ResultModel offlineCommand2() {
       return ResultModel.createInfo(COMMAND3_SUCCESS);
     }
 
-    @CliMetaData(shellOnly = false)
+    @CliMetaData(requireLocalExecution = false)
     public Result onlineCommand() {
       return ResultBuilder.createInfoResult(COMMAND2_SUCCESS);
     }

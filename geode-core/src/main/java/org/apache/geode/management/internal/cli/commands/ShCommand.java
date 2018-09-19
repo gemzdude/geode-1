@@ -33,7 +33,7 @@ import org.apache.geode.management.internal.cli.shell.Gfsh;
 
 public class ShCommand extends InternalGfshCommand {
   @CliCommand(value = {CliStrings.SH}, help = CliStrings.SH__HELP)
-  @CliMetaData(shellOnly = true, relatedTopic = {CliStrings.TOPIC_GFSH})
+  @CliMetaData(requireLocalExecution = true, relatedTopic = {CliStrings.TOPIC_GFSH})
   public Result sh(
       @CliOption(key = {"", CliStrings.SH__COMMAND}, mandatory = true,
           help = CliStrings.SH__COMMAND__HELP) String command,

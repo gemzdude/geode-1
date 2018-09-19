@@ -59,7 +59,7 @@ import org.apache.geode.security.AuthenticationFailedException;
 
 public class StartLocatorCommand extends InternalGfshCommand {
   @CliCommand(value = CliStrings.START_LOCATOR, help = CliStrings.START_LOCATOR__HELP)
-  @CliMetaData(shellOnly = true,
+  @CliMetaData(requireLocalExecution = true,
       relatedTopic = {CliStrings.TOPIC_GEODE_LOCATOR, CliStrings.TOPIC_GEODE_LIFECYCLE})
   public Result startLocator(
       @CliOption(key = CliStrings.START_LOCATOR__MEMBER_NAME,

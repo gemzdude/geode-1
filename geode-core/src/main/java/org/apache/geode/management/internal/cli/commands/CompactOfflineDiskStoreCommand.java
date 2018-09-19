@@ -38,7 +38,7 @@ import org.apache.geode.management.internal.cli.util.DiskStoreCompacter;
 public class CompactOfflineDiskStoreCommand extends InternalGfshCommand {
   @CliCommand(value = CliStrings.COMPACT_OFFLINE_DISK_STORE,
       help = CliStrings.COMPACT_OFFLINE_DISK_STORE__HELP)
-  @CliMetaData(shellOnly = true, relatedTopic = {CliStrings.TOPIC_GEODE_DISKSTORE})
+  @CliMetaData(requireLocalExecution = true, relatedTopic = {CliStrings.TOPIC_GEODE_DISKSTORE})
   public ResultModel compactOfflineDiskStore(
       @CliOption(key = CliStrings.COMPACT_OFFLINE_DISK_STORE__NAME, mandatory = true,
           help = CliStrings.COMPACT_OFFLINE_DISK_STORE__NAME__HELP) String diskStoreName,

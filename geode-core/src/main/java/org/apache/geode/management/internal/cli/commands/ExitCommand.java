@@ -24,7 +24,7 @@ import org.apache.geode.management.internal.cli.shell.Gfsh;
 
 public class ExitCommand extends InternalGfshCommand {
   @CliCommand(value = {CliStrings.EXIT, "quit"}, help = CliStrings.EXIT__HELP)
-  @CliMetaData(shellOnly = true, relatedTopic = {CliStrings.TOPIC_GFSH})
+  @CliMetaData(requireLocalExecution = true, relatedTopic = {CliStrings.TOPIC_GFSH})
   public ExitShellRequest exit() {
     Gfsh gfshInstance = getGfsh();
 

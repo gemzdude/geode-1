@@ -84,8 +84,9 @@ public class ConnectCommand extends InternalGfshCommand {
           UserInputProperty.CIPHERS, UserInputProperty.PROTOCOL, UserInputProperty.COMPONENT};
 
   @CliCommand(value = {CliStrings.CONNECT}, help = CliStrings.CONNECT__HELP)
-  @CliMetaData(shellOnly = true, relatedTopic = {CliStrings.TOPIC_GFSH, CliStrings.TOPIC_GEODE_JMX,
-      CliStrings.TOPIC_GEODE_MANAGER})
+  @CliMetaData(requireLocalExecution = true,
+      relatedTopic = {CliStrings.TOPIC_GFSH, CliStrings.TOPIC_GEODE_JMX,
+          CliStrings.TOPIC_GEODE_MANAGER})
   public Result connect(
       @CliOption(key = {CliStrings.CONNECT__LOCATOR},
           unspecifiedDefaultValue = ConnectionEndpointConverter.DEFAULT_LOCATOR_ENDPOINTS,

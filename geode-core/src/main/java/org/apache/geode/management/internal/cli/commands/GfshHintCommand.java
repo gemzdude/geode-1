@@ -34,7 +34,7 @@ public class GfshHintCommand extends InternalGfshCommand implements CommandManag
   }
 
   @CliCommand(value = CliStrings.HINT, help = CliStrings.HINT__HELP)
-  @CliMetaData(shellOnly = true, relatedTopic = {CliStrings.TOPIC_GEODE_HELP})
+  @CliMetaData(requireLocalExecution = true, relatedTopic = {CliStrings.TOPIC_GEODE_HELP})
   public Result hint(@CliOption(key = {"", CliStrings.HINT__TOPICNAME},
       optionContext = ConverterHint.HINT, help = CliStrings.HINT__TOPICNAME) String topicName) {
     return ResultBuilder.createInfoResult(commandManager.obtainHint(topicName));

@@ -63,7 +63,8 @@ public class GfshExecutionStrategy implements ExecutionStrategy {
   /**
    * Executes the method indicated by the {@link ParseResult} which would always be
    * {@link GfshParseResult} for GemFire defined commands. If the command Method is decorated with
-   * {@link CliMetaData#shellOnly()} set to <code>false</code>, {@link OperationInvoker} is used to
+   * {@link CliMetaData#requireLocalExecution()} set to <code>false</code>, {@link OperationInvoker}
+   * is used to
    * send the command for processing on a remote GemFire node.
    *
    * @param parseResult that should be executed (never presented as null)
@@ -76,7 +77,7 @@ public class GfshExecutionStrategy implements ExecutionStrategy {
     Method method = parseResult.getMethod();
 
     // check if it's a shell only command
-    if (isShellOnly(method)) {
+    if (requiresLocalExecution(method)) {
       Assert.notNull(parseResult, "Parse result required");
       synchronized (mutex) {
         Assert.isTrue(isReadyForCommands(), "Not yet ready for commands");
@@ -103,12 +104,13 @@ public class GfshExecutionStrategy implements ExecutionStrategy {
    * Whether the command is available only at the shell or on GemFire member too.
    *
    * @param method the method to check the associated annotation
-   * @return true if CliMetaData is added to the method & CliMetaData.shellOnly is set to true,
+   * @return true if CliMetaData is added to the method & CliMetaData.requireLocalExecution is set
+   *         to true,
    *         false otherwise
    */
-  private boolean isShellOnly(Method method) {
+  private boolean requiresLocalExecution(Method method) {
     CliMetaData cliMetadata = method.getAnnotation(CliMetaData.class);
-    return cliMetadata != null && cliMetadata.shellOnly();
+    return cliMetadata != null && cliMetadata.requireLocalExecution();
   }
 
   private String getInterceptor(Method method) {

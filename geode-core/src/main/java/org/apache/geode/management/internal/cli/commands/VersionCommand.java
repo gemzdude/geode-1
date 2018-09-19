@@ -26,7 +26,7 @@ import org.apache.geode.management.internal.cli.shell.Gfsh;
 
 public class VersionCommand extends InternalGfshCommand {
   @CliCommand(value = {CliStrings.VERSION}, help = CliStrings.VERSION__HELP)
-  @CliMetaData(shellOnly = true, relatedTopic = {CliStrings.TOPIC_GFSH})
+  @CliMetaData(requireLocalExecution = true, relatedTopic = {CliStrings.TOPIC_GFSH})
   public Result version(@CliOption(key = {CliStrings.VERSION__FULL}, specifiedDefaultValue = "true",
       unspecifiedDefaultValue = "false", help = CliStrings.VERSION__FULL__HELP) boolean full) {
     Gfsh gfsh = Gfsh.getCurrentInstance();

@@ -38,7 +38,7 @@ public class StopServerCommand extends InternalGfshCommand {
   private static final long WAITING_FOR_STOP_TO_MAKE_PID_GO_AWAY_TIMEOUT_MILLIS = 30 * 1000;
 
   @CliCommand(value = CliStrings.STOP_SERVER, help = CliStrings.STOP_SERVER__HELP)
-  @CliMetaData(shellOnly = true,
+  @CliMetaData(requireLocalExecution = true,
       relatedTopic = {CliStrings.TOPIC_GEODE_SERVER, CliStrings.TOPIC_GEODE_LIFECYCLE})
   public Result stopServer(
       @CliOption(key = CliStrings.STOP_SERVER__MEMBER, optionContext = ConverterHint.MEMBERIDNAME,

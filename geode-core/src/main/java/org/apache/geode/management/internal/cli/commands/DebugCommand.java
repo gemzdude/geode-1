@@ -27,7 +27,7 @@ import org.apache.geode.management.internal.cli.shell.Gfsh;
 
 public class DebugCommand extends InternalGfshCommand {
   @CliCommand(value = {CliStrings.DEBUG}, help = CliStrings.DEBUG__HELP)
-  @CliMetaData(shellOnly = true,
+  @CliMetaData(requireLocalExecution = true,
       relatedTopic = {CliStrings.TOPIC_GFSH, CliStrings.TOPIC_GEODE_DEBUG_UTIL})
   public Result debug(
       @CliOption(key = CliStrings.DEBUG__STATE, unspecifiedDefaultValue = "OFF", mandatory = true,

@@ -43,7 +43,7 @@ import org.apache.geode.management.internal.cli.result.ResultBuilder;
 
 public class StartVsdCommand extends InternalGfshCommand {
   @CliCommand(value = CliStrings.START_VSD, help = CliStrings.START_VSD__HELP)
-  @CliMetaData(shellOnly = true,
+  @CliMetaData(requireLocalExecution = true,
       relatedTopic = {CliStrings.TOPIC_GEODE_M_AND_M, CliStrings.TOPIC_GEODE_STATISTICS})
   public Result startVsd(@CliOption(key = CliStrings.START_VSD__FILE,
       help = CliStrings.START_VSD__FILE__HELP) final String[] statisticsArchiveFilePathnames) {

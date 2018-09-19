@@ -34,7 +34,7 @@ public class GfshHelpCommand extends InternalGfshCommand implements CommandManag
   }
 
   @CliCommand(value = CliStrings.HELP, help = CliStrings.HELP__HELP)
-  @CliMetaData(shellOnly = true, relatedTopic = {CliStrings.TOPIC_GEODE_HELP})
+  @CliMetaData(requireLocalExecution = true, relatedTopic = {CliStrings.TOPIC_GEODE_HELP})
   public Result obtainHelp(
       @CliOption(key = {"", CliStrings.SH__COMMAND}, optionContext = ConverterHint.HELP,
           help = "Command name to provide help for") String buffer) {
