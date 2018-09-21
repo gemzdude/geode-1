@@ -22,7 +22,6 @@ import static org.apache.geode.management.internal.cli.shell.Gfsh.ENV_APP_QUIET_
 
 import java.net.InetSocketAddress;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -45,8 +44,6 @@ import org.apache.geode.distributed.DistributedMember;
 import org.apache.geode.internal.logging.LogService;
 import org.apache.geode.management.cli.CliMetaData;
 import org.apache.geode.management.cli.SingleGfshCommand;
-import org.apache.geode.management.internal.cli.functions.CliFunctionResult;
-import org.apache.geode.management.internal.cli.functions.CreateJndiBindingFunction;
 import org.apache.geode.management.internal.cli.i18n.CliStrings;
 import org.apache.geode.management.internal.cli.result.InfoResultData;
 import org.apache.geode.management.internal.cli.result.LegacyCommandResult;
@@ -219,6 +216,7 @@ public class CreateJndiBindingCommand extends SingleGfshCommand {
       locatorHost = m.group(1);
       locatorPort = m.group(2);
     }
+
     gfsh.printAsInfo("OUTPUT: " + locatorHost + " OUT2: " + locatorPort);
 
 
@@ -243,10 +241,31 @@ public class CreateJndiBindingCommand extends SingleGfshCommand {
     ClientCache cache = new ClientCacheFactory()
         .addPoolLocator(locatorHost, Integer.parseInt(locatorPort)).create();
 
-    Set<DistributedMember> targetMembers = new HashSet();
+    if (cache == null) {
+      gfsh.printAsInfo("**NULL CACHE**");
+      return ResultModel.createInfo("Exiting.");
+    }
 
+    // Execution execution = FunctionService.onServers(cache)
+    // .setArguments(new Object[] {configuration});
+    // try {
+    // ResultCollector collector = execution.execute(CreateJndiBindingFunction.ID);
+    // collector.getResult();
+    // } catch (Exception e) {
+    // gfsh.printAsInfo("BLEW_IT" + e); // throws function not registered error
+    // }
 
-    for (InetSocketAddress iSockAddr : cache.getCurrentServers()) {
+    // Execution dataSet;
+    // dataSet = FunctionService.onServers(pool).withArgs("Args")
+    // .withCollector(new ArrayListResultCollector());
+    // ArrayList<Object> list = (ArrayList) dataSet.execute(function).getResult();
+
+    Set<DistributedMember> targetMembers = cache.getDistributedSystem().getAllOtherMembers();  // empty list
+    // Set<DistributedMember> targetMembers = CliUtil.getAllMembers((InternalCache) cache);  // says loner (client?)
+    List<InetSocketAddress> iSockSet = cache.getDefaultPool().getServers();
+    gfsh.printAsInfo("SOCKS: " + iSockSet);
+
+    for (InetSocketAddress iSockAddr : iSockSet) {
       gfsh.printAsInfo("InetSockets");
       for (DistributedMember dist : cache.getDistributedSystem()
           .findDistributedMembers(iSockAddr.getAddress())) {
@@ -254,18 +273,19 @@ public class CreateJndiBindingCommand extends SingleGfshCommand {
         targetMembers.add(dist);
       }
     }
+    gfsh.printAsInfo("MBRS: " + targetMembers);
 
-    // FunctionService.onServers(cache.getDefaultPool()).execute(someFunction);
-
-    if (targetMembers != null && targetMembers.size() > 0) {
-      List<CliFunctionResult> jndiCreationResult = executeAndGetFunctionResult(
-          new CreateJndiBindingFunction(), configuration, targetMembers);
-      ResultModel result = ResultModel.createMemberStatusResult(jndiCreationResult);
-      result.setConfigObject(configuration);
-      return result;
-    } else {
-      return ResultModel.createInfo("No members found.");
-    }
+    // if (targetMembers != null && targetMembers.size() > 0) {
+    // List<CliFunctionResult> jndiCreationResult = executeAndGetFunctionResult(
+    // new CreateJndiBindingFunction(), configuration, targetMembers);
+    // ResultModel result = ResultModel.createMemberStatusResult(jndiCreationResult);
+    // // result.setConfigObject(configuration);
+    // cache.close();
+    // return result;
+    // } else {
+    // cache.close();
+    return ResultModel.createInfo("Exiting.");
+    // }
   }
 
   @Override
