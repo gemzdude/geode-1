@@ -245,12 +245,17 @@ public class CreateJndiBindingCommand extends SingleGfshCommand {
 
     Set<DistributedMember> targetMembers = new HashSet();
 
+
     for (InetSocketAddress iSockAddr : cache.getCurrentServers()) {
+      gfsh.printAsInfo("InetSockets");
       for (DistributedMember dist : cache.getDistributedSystem()
           .findDistributedMembers(iSockAddr.getAddress())) {
+        gfsh.printAsInfo("DistributedMembers");
         targetMembers.add(dist);
       }
     }
+
+    // FunctionService.onServers(cache.getDefaultPool()).execute(someFunction);
 
     if (targetMembers != null && targetMembers.size() > 0) {
       List<CliFunctionResult> jndiCreationResult = executeAndGetFunctionResult(
