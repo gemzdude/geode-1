@@ -17,6 +17,8 @@ package org.apache.geode.connectors.jdbc.internal;
 import org.apache.geode.annotations.Experimental;
 import org.apache.geode.cache.CacheCallback;
 import org.apache.geode.cache.Operation;
+import org.apache.geode.cache.Region;
+import org.apache.geode.connectors.jdbc.internal.configuration.RegionMapping;
 import org.apache.geode.internal.cache.InternalCache;
 
 @Experimental
@@ -24,23 +26,26 @@ public abstract class AbstractJdbcCallback implements CacheCallback {
 
   private volatile SqlHandler sqlHandler;
   protected InternalCache cache;
+  protected RegionMapping regionMapping;
 
   protected AbstractJdbcCallback() {
     // nothing
   }
 
-  protected AbstractJdbcCallback(SqlHandler sqlHandler, InternalCache cache) {
+  protected AbstractJdbcCallback(SqlHandler sqlHandler, Region region) {
     this.sqlHandler = sqlHandler;
-    this.cache = cache;
+    this.cache = (InternalCache) region.getRegionService();
+    JdbcConnectorService service = cache.getService(JdbcConnectorService.class);
+    regionMapping = service.getMappingForRegion(region.getName());
   }
 
   protected SqlHandler getSqlHandler() {
     return sqlHandler;
   }
 
-  protected void checkInitialized(InternalCache cache) {
+  protected void checkInitialized(Region region) {
     if (sqlHandler == null) {
-      initialize(cache);
+      initialize(region);
     }
   }
 
@@ -48,10 +53,11 @@ public abstract class AbstractJdbcCallback implements CacheCallback {
     return operation.isLoad();
   }
 
-  private synchronized void initialize(InternalCache cache) {
+  private synchronized void initialize(Region region) {
     if (sqlHandler == null) {
-      this.cache = cache;
+      this.cache = (InternalCache) region.getRegionService();
       JdbcConnectorService service = cache.getService(JdbcConnectorService.class);
+      regionMapping = service.getMappingForRegion(region.getName());
       TableMetaDataManager tableMetaDataManager = new TableMetaDataManager();
       sqlHandler = new SqlHandler(tableMetaDataManager, service);
     }

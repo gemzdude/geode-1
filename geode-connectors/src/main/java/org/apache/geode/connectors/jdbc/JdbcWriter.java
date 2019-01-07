@@ -22,6 +22,7 @@ import org.apache.geode.annotations.Experimental;
 import org.apache.geode.cache.CacheWriter;
 import org.apache.geode.cache.CacheWriterException;
 import org.apache.geode.cache.EntryEvent;
+import org.apache.geode.cache.Region;
 import org.apache.geode.cache.RegionEvent;
 import org.apache.geode.cache.SerializedCacheValue;
 import org.apache.geode.connectors.jdbc.internal.AbstractJdbcCallback;
@@ -45,8 +46,8 @@ public class JdbcWriter<K, V> extends AbstractJdbcCallback implements CacheWrite
   }
 
   // Constructor for test purposes only
-  JdbcWriter(SqlHandler sqlHandler, InternalCache cache) {
-    super(sqlHandler, cache);
+  JdbcWriter(SqlHandler sqlHandler, Region region) {
+    super(sqlHandler, region);
   }
 
 
@@ -79,7 +80,7 @@ public class JdbcWriter<K, V> extends AbstractJdbcCallback implements CacheWrite
     if (eventCanBeIgnored(event.getOperation())) {
       return;
     }
-    checkInitialized((InternalCache) event.getRegion().getRegionService());
+    checkInitialized(event.getRegion());
     totalEvents.add(1);
     try {
       getSqlHandler().write(event.getRegion(), event.getOperation(), event.getKey(),

@@ -31,6 +31,7 @@ import org.apache.geode.cache.EntryEvent;
 import org.apache.geode.cache.Operation;
 import org.apache.geode.cache.RegionEvent;
 import org.apache.geode.cache.SerializedCacheValue;
+import org.apache.geode.connectors.jdbc.internal.JdbcConnectorService;
 import org.apache.geode.connectors.jdbc.internal.SqlHandler;
 import org.apache.geode.internal.cache.InternalCache;
 import org.apache.geode.internal.cache.InternalRegion;
@@ -46,6 +47,8 @@ public class JdbcWriterTest {
   private SerializedCacheValue<Object> serializedNewValue;
   private RegionEvent<Object, Object> regionEvent;
   private InternalCache cache;
+  private JdbcConnectorService service;
+
   private Object key;
 
   private JdbcWriter<Object, Object> writer;
@@ -59,16 +62,18 @@ public class JdbcWriterTest {
     serializedNewValue = mock(SerializedCacheValue.class);
     regionEvent = mock(RegionEvent.class);
     cache = Fakes.cache();
+    service = mock(JdbcConnectorService.class);
     key = "key";
 
     when(entryEvent.getRegion()).thenReturn(region);
     when(entryEvent.getKey()).thenReturn(key);
     when(entryEvent.getRegion().getRegionService()).thenReturn(cache);
+    when(cache.getService(JdbcConnectorService.class)).thenReturn(service);
     when(entryEvent.getSerializedNewValue()).thenReturn(serializedNewValue);
     when(entryEvent.getOperation()).thenReturn(Operation.CREATE);
     when(serializedNewValue.getDeserializedValue()).thenReturn(pdxInstance);
 
-    writer = new JdbcWriter<>(sqlHandler, cache);
+    writer = new JdbcWriter<>(sqlHandler, region);
   }
 
   @Test

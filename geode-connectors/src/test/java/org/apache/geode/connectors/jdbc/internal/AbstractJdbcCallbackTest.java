@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.apache.geode.cache.Operation;
+import org.apache.geode.cache.Region;
 import org.apache.geode.internal.cache.InternalCache;
 import org.apache.geode.test.fake.Fakes;
 
@@ -32,12 +33,20 @@ public class AbstractJdbcCallbackTest {
   private AbstractJdbcCallback jdbcCallback;
   private SqlHandler sqlHandler;
   private InternalCache cache;
+  private JdbcConnectorService service;
+  private Region region;
 
   @Before
   public void setUp() {
     cache = Fakes.cache();
+    region = Fakes.region("testRegion", cache);
     sqlHandler = mock(SqlHandler.class);
-    jdbcCallback = new AbstractJdbcCallback(sqlHandler, cache) {};
+    service = mock(JdbcConnectorService.class);
+
+    when(region.getRegionService()).thenReturn(cache);
+    when(cache.getService(JdbcConnectorService.class)).thenReturn(service);
+
+    jdbcCallback = new AbstractJdbcCallback(sqlHandler, region) {};
   }
 
   @Test
@@ -47,7 +56,7 @@ public class AbstractJdbcCallbackTest {
 
   @Test
   public void checkInitializedDoesNothingIfInitialized() {
-    jdbcCallback.checkInitialized(mock(InternalCache.class));
+    jdbcCallback.checkInitialized(region);
     assertThat(jdbcCallback.getSqlHandler()).isSameAs(sqlHandler);
   }
 
@@ -59,7 +68,7 @@ public class AbstractJdbcCallbackTest {
     when(cache.getService(any())).thenReturn(service);
     assertThat(jdbcCallback.getSqlHandler()).isNull();
 
-    jdbcCallback.checkInitialized(cache);
+    jdbcCallback.checkInitialized(region);
 
     assertThat(jdbcCallback.getSqlHandler()).isNotNull();
   }

@@ -303,12 +303,12 @@ public abstract class JdbcWriterIntegrationTest {
   private Region<String, PdxInstance> createRegionWithJDBCSynchronousWriter(String regionName,
       String ids)
       throws RegionMappingExistsException {
-    jdbcWriter = new JdbcWriter(createSqlHandler(ids), cache);
-
     RegionFactory<String, PdxInstance> regionFactory =
         cache.createRegionFactory(RegionShortcut.REPLICATE);
-    regionFactory.setCacheWriter(jdbcWriter);
-    return regionFactory.create(regionName);
+    Region<String, PdxInstance> region = regionFactory.create(regionName);
+    jdbcWriter = new JdbcWriter(createSqlHandler(ids), cache.getRegion(regionName));
+    region.getAttributesMutator().setCacheWriter(jdbcWriter);
+    return region;
   }
 
   private void validateTableRowCount(int expected) throws Exception {

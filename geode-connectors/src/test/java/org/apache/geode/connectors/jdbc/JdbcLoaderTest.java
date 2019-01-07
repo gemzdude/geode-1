@@ -24,6 +24,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.apache.geode.cache.LoaderHelper;
+import org.apache.geode.cache.Region;
+import org.apache.geode.connectors.jdbc.internal.JdbcConnectorService;
 import org.apache.geode.connectors.jdbc.internal.SqlHandler;
 import org.apache.geode.internal.cache.InternalCache;
 import org.apache.geode.internal.cache.InternalRegion;
@@ -37,16 +39,22 @@ public class JdbcLoaderTest {
   private JdbcLoader<Object, Object> loader;
 
   private InternalCache cache;
+  private Region region;
+  private JdbcConnectorService service;
 
   @Before
   public void setUp() throws Exception {
     cache = Fakes.cache();
+    region = Fakes.region("testRegion", cache);
     sqlHandler = mock(SqlHandler.class);
+    service = mock(JdbcConnectorService.class);
     loaderHelper = mock(LoaderHelper.class);
 
-    when(loaderHelper.getRegion()).thenReturn(mock(InternalRegion.class));
+    when(region.getRegionService()).thenReturn(cache);
+    when(cache.getService(JdbcConnectorService.class)).thenReturn(service);
+    when(loaderHelper.getRegion()).thenReturn(region);
 
-    loader = new JdbcLoader<>(sqlHandler, cache);
+    loader = new JdbcLoader<>(sqlHandler, region);
   }
 
   @Test

@@ -22,11 +22,11 @@ import org.apache.logging.log4j.Logger;
 
 import org.apache.geode.CopyHelper;
 import org.apache.geode.annotations.Experimental;
+import org.apache.geode.cache.Region;
 import org.apache.geode.cache.asyncqueue.AsyncEvent;
 import org.apache.geode.cache.asyncqueue.AsyncEventListener;
 import org.apache.geode.connectors.jdbc.internal.AbstractJdbcCallback;
 import org.apache.geode.connectors.jdbc.internal.SqlHandler;
-import org.apache.geode.internal.cache.InternalCache;
 import org.apache.geode.internal.logging.LogService;
 import org.apache.geode.pdx.PdxInstance;
 
@@ -50,8 +50,8 @@ public class JdbcAsyncWriter extends AbstractJdbcCallback implements AsyncEventL
   }
 
   // Constructor for test purposes only
-  JdbcAsyncWriter(SqlHandler sqlHandler, InternalCache cache) {
-    super(sqlHandler, cache);
+  JdbcAsyncWriter(SqlHandler sqlHandler, Region region) {
+    super(sqlHandler, region);
   }
 
   @Override
@@ -59,7 +59,7 @@ public class JdbcAsyncWriter extends AbstractJdbcCallback implements AsyncEventL
     changeTotalEvents(events.size());
 
     if (!events.isEmpty()) {
-      checkInitialized((InternalCache) events.get(0).getRegion().getRegionService());
+      checkInitialized(events.get(0).getRegion());
     }
 
     Boolean initialPdxReadSerialized = cache.getPdxReadSerializedOverride();

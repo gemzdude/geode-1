@@ -181,7 +181,7 @@ public abstract class JdbcLoaderIntegrationTest {
       String ids)
       throws RegionMappingExistsException {
     JdbcLoader<K, V> jdbcLoader =
-        new JdbcLoader<>(createSqlHandler(pdxClassName, ids), cache);
+        new JdbcLoader<>(createSqlHandler(pdxClassName, ids), cache.getRegion(regionName));
     RegionFactory<K, V> regionFactory = cache.createRegionFactory(REPLICATE);
     regionFactory.setCacheLoader(jdbcLoader);
     return regionFactory.create(regionName);

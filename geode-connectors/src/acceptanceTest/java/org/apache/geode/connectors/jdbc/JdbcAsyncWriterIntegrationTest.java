@@ -319,7 +319,7 @@ public abstract class JdbcAsyncWriterIntegrationTest {
 
   private Region<String, PdxInstance> createRegionWithJDBCAsyncWriter(String regionName, String ids)
       throws RegionMappingExistsException {
-    jdbcWriter = new JdbcAsyncWriter(createSqlHandler(ids), cache);
+    jdbcWriter = new JdbcAsyncWriter(createSqlHandler(ids), cache.getRegion(regionName));
     cache.createAsyncEventQueueFactory().setBatchSize(1).setBatchTimeInterval(1)
         .create("jdbcAsyncQueue", jdbcWriter);
 
