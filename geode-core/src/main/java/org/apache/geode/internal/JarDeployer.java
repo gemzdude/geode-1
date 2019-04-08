@@ -21,8 +21,11 @@ import static java.util.stream.Collectors.toSet;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.file.Files;
+import java.sql.Driver;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -378,6 +381,32 @@ public class JarDeployer implements Serializable {
           oldJar.cleanUp(newjar);
         }
       }
+
+      // Class clazz = Class.forName("java.lang.String");
+      // ClassLoader cl = clazz.getClassLoader();
+      // cl.loadClass("org.apache.derby.jdbc.AutoloadedDriver");
+      Class drvClass =
+          ClassPathLoader.getLatest().forName("org.apache.derby.jdbc.AutoloadedDriver"); // SAJ saj
+                                                                                         // this
+                                                                                         // works
+      Driver driver = null;
+      try {
+        driver = (Driver) drvClass.newInstance();
+      } catch (InstantiationException e) {
+        e.printStackTrace();
+      } catch (IllegalAccessException e) {
+        e.printStackTrace();
+      }
+      Class mgr = ClassPathLoader.getLatest().forName("java.sql.DriverManager");
+      // String.class here is the parameter type, that might not be the case with you
+      Method method = null;
+      try {
+        method = mgr.getMethod("registerDriver", driver.getClass());
+        Object o = method.invoke(null, driver);
+      } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+        e.printStackTrace();
+      }
+      // Class.forName("org.apache.derby.jdbc.AutoloadedDriver"); // SAJ saj this does not work
 
     } finally {
       lock.unlock();
