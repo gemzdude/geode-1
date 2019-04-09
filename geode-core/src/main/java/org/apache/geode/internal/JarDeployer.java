@@ -23,7 +23,9 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.sql.Driver;
 import java.util.ArrayList;
@@ -377,42 +379,39 @@ public class JarDeployer implements Serializable {
 
         newjar.registerFunctions();
 
+        addToSystemClasspath(newjar);
+        
         if (oldJar != null) {
           oldJar.cleanUp(newjar);
         }
       }
-
-      // Class clazz = Class.forName("java.lang.String");
-      // ClassLoader cl = clazz.getClassLoader();
-      // cl.loadClass("org.apache.derby.jdbc.AutoloadedDriver");
-      Class drvClass =
-          ClassPathLoader.getLatest().forName("org.apache.derby.jdbc.AutoloadedDriver"); // SAJ saj
-                                                                                         // this
-                                                                                         // works
-      Driver driver = null;
-      try {
-        driver = (Driver) drvClass.newInstance();
-      } catch (InstantiationException e) {
-        e.printStackTrace();
-      } catch (IllegalAccessException e) {
-        e.printStackTrace();
-      }
-      Class mgr = ClassPathLoader.getLatest().forName("java.sql.DriverManager");
-      // String.class here is the parameter type, that might not be the case with you
-      Method method = null;
-      try {
-        method = mgr.getMethod("registerDriver", driver.getClass());
-        Object o = method.invoke(null, driver);
-      } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-        e.printStackTrace();
-      }
-      // Class.forName("org.apache.derby.jdbc.AutoloadedDriver"); // SAJ saj this does not work
 
     } finally {
       lock.unlock();
     }
 
     return deployedJars;
+  }
+
+  private static void addToSystemClasspath(DeployedJar jar) {
+    File jarFile = jar.getFile();
+    Method method = null;
+    try {
+      // logger.info("SAJ loader for DriverManager: " + DriverManager.class.getClassLoader());
+      ClassLoader clsLoader = ClassLoader.getSystemClassLoader();
+      logger.info("SAJ parent of System ClassLoader: " + clsLoader.getParent());
+      clsLoader = clsLoader.getParent();
+      logger.info("SAJ parent of parent of System ClassLoader: " + clsLoader.getParent());
+
+      method = URLClassLoader.class.getDeclaredMethod("addURL", new Class[] {URL.class});
+      method.setAccessible(true);
+      method.invoke(clsLoader, new Object[] {jarFile.toURI().toURL()});
+      // method.invoke(ClassLoader.getSystemClassLoader(), new Object[] {jarFile.toURI().toURL()});
+    } catch (NoSuchMethodException | MalformedURLException | IllegalAccessException
+        | InvocationTargetException e) {
+      logger.info("SAJ caught classpath exception");
+      e.printStackTrace();
+    }
   }
 
   /**
