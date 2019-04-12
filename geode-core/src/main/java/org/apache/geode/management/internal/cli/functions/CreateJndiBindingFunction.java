@@ -14,6 +14,10 @@
  */
 package org.apache.geode.management.internal.cli.functions;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +44,8 @@ public class CreateJndiBindingFunction extends CliFunction<Object[]> {
 
   @Override
   public CliFunctionResult executeFunction(FunctionContext<Object[]> context)
-      throws DataSourceCreateException, NamingException {
+      throws DataSourceCreateException, NamingException, MalformedURLException,
+      ClassNotFoundException {
     ResultSender<Object> resultSender = context.getResultSender();
     Object[] arguments = context.getArguments();
     JndiBinding configuration = (JndiBinding) arguments[0];
@@ -51,7 +56,20 @@ public class CreateJndiBindingFunction extends CliFunction<Object[]> {
     } else {
       TYPE_NAME = "jndi-binding";
     }
+    ClassLoader prevCl = Thread.currentThread().getContextClassLoader();; // saj SAJ
     try {
+
+      // saj SAJ
+      File jarFile = new File("/root/demo/server1/derby.v1.jar");
+      logger.info("SAJ jarFile exists: " + jarFile.exists());
+      URLClassLoader cl =
+          new URLClassLoader(new URL[] {jarFile.toURI().toURL()}, prevCl);
+      cl.loadClass("org.apache.derby.jdbc.AutoloadedDriver");
+      Thread.currentThread().setContextClassLoader(cl);
+      logger.info("SAJ function context loader: " + Thread.currentThread().getContextClassLoader());
+
+      // saj SAJ
+
       JNDIInvoker.mapDatasource(getParamsAsMap(configuration),
           convert(configuration.getConfigProperties()));
     } catch (DataSourceCreateException ex) {
@@ -59,12 +77,13 @@ public class CreateJndiBindingFunction extends CliFunction<Object[]> {
         logger.error("create " + TYPE_NAME + " failed", ex.getWrappedException());
       }
       throw ex;
-    } catch (NamingException ex) {
+    } catch (NamingException | MalformedURLException | ClassNotFoundException ex) {
       if (logger.isErrorEnabled()) {
         logger.error("create " + TYPE_NAME + " failed", ex);
       }
       throw ex;
-
+    } finally {
+      Thread.currentThread().setContextClassLoader(prevCl);
     }
 
     return new CliFunctionResult(context.getMemberName(), StatusState.OK,

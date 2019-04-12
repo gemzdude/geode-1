@@ -27,7 +27,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
-import java.sql.Driver;
+import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -367,6 +367,9 @@ public class JarDeployer implements Serializable {
           logger.info("Registering new version of jar: {}", deployedJar);
           DeployedJar oldJar = this.deployedJars.put(deployedJar.getJarName(), deployedJar);
           newVersionToOldVersion.put(deployedJar, oldJar);
+
+          // addToSystemClasspath(deployedJar);
+
         }
       }
 
@@ -379,8 +382,6 @@ public class JarDeployer implements Serializable {
 
         newjar.registerFunctions();
 
-        addToSystemClasspath(newjar);
-        
         if (oldJar != null) {
           oldJar.cleanUp(newjar);
         }
@@ -397,18 +398,13 @@ public class JarDeployer implements Serializable {
     File jarFile = jar.getFile();
     Method method = null;
     try {
-      // logger.info("SAJ loader for DriverManager: " + DriverManager.class.getClassLoader());
-      ClassLoader clsLoader = ClassLoader.getSystemClassLoader();
-      logger.info("SAJ parent of System ClassLoader: " + clsLoader.getParent());
-      clsLoader = clsLoader.getParent();
-      logger.info("SAJ parent of parent of System ClassLoader: " + clsLoader.getParent());
-
       method = URLClassLoader.class.getDeclaredMethod("addURL", new Class[] {URL.class});
       method.setAccessible(true);
-      method.invoke(clsLoader, new Object[] {jarFile.toURI().toURL()});
-      // method.invoke(ClassLoader.getSystemClassLoader(), new Object[] {jarFile.toURI().toURL()});
+      method.invoke(ClassLoader.getSystemClassLoader(), new Object[] {jarFile.toURI().toURL()});
+      logger.info("SAJ loader for DriverManager: " + DriverManager.class.getClassLoader());
+      Class.forName("org.apache.derby.jdbc.AutoloadedDriver");
     } catch (NoSuchMethodException | MalformedURLException | IllegalAccessException
-        | InvocationTargetException e) {
+        | InvocationTargetException | ClassNotFoundException e) {
       logger.info("SAJ caught classpath exception");
       e.printStackTrace();
     }

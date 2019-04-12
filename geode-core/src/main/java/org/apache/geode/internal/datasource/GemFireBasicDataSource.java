@@ -149,6 +149,9 @@ public class GemFireBasicDataSource extends AbstractDataSource {
   }
 
   private Driver loadDriverUsingURL() throws SQLException {
+    logger.info("SAJ GemFireBasicDataSource context loader: "
+        + Thread.currentThread().getContextClassLoader());
+
     return DriverManager.getDriver(this.url);
   }
 

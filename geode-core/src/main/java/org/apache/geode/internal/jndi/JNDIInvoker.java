@@ -345,9 +345,12 @@ public class JNDIInvoker {
     mapDatasource(map, props, dataSourceFactory, ctx);
   }
 
-  static void mapDatasource(Map map, List<ConfigProperty> props,
+  public static void mapDatasource(Map map, List<ConfigProperty> props,
       DataSourceFactory dataSourceFactory, Context context)
       throws NamingException, DataSourceCreateException {
+
+    logger.info("SAJ invoker context loader: " + Thread.currentThread().getContextClassLoader());
+
     String value = (String) map.get("type");
     String jndiName = "";
     jndiName = (String) map.get("jndi-name");
