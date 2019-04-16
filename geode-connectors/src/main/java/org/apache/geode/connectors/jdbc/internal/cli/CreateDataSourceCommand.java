@@ -14,6 +14,7 @@
  */
 package org.apache.geode.connectors.jdbc.internal.cli;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -85,6 +86,8 @@ public class CreateDataSourceCommand extends SingleGfshCommand {
           help = POOLED_DATA_SOURCE_FACTORY_CLASS__HELP) String pooledDataSourceFactoryClass,
       @CliOption(key = URL, mandatory = true,
           help = URL__HELP) String url,
+      @CliOption(key = {CliStrings.JAR, CliStrings.JARS},
+          help = CliStrings.DEPLOY__JAR__HELP) String jar,
       @CliOption(key = NAME, mandatory = true, help = NAME__HELP) String name,
       @CliOption(key = USERNAME, help = USERNAME__HELP) String username,
       @CliOption(key = PASSWORD, help = PASSWORD__HELP) String password,
@@ -93,7 +96,8 @@ public class CreateDataSourceCommand extends SingleGfshCommand {
       @CliOption(key = POOLED, help = POOLED__HELP,
           specifiedDefaultValue = "true", unspecifiedDefaultValue = "true") boolean pooled,
       @CliOption(key = POOL_PROPERTIES, optionContext = "splittingRegex=,(?![^{]*\\})",
-          help = POOL_PROPERTIES_HELP) PoolProperty[] poolProperties) {
+          help = POOL_PROPERTIES_HELP) PoolProperty[] poolProperties)
+      throws IOException {
 
     JndiBindingsType.JndiBinding configuration = new JndiBindingsType.JndiBinding();
     if (pooled) {
@@ -133,6 +137,17 @@ public class CreateDataSourceCommand extends SingleGfshCommand {
     }
 
     Set<DistributedMember> targetMembers = findMembers(null, null);
+
+    // DeployCommand deployCommand = new DeployCommand();
+    // ResultModel deployResult = deployCommand.deploy(new String[] {}, new String[] {jar}, "");
+    // int i = 0;
+    // for (DistributedMember member : targetMembers) {
+    // i++;
+    // List<String> jarNames = new ArrayList<>();
+    // TabularResultModel deployInfo = deployResult.getTableSection("deployResult");
+    // System.out.println("SAJ: " + deployInfo.getValuesInRow(i));
+    // }
+
     if (targetMembers.size() > 0) {
       Object[] arguments = new Object[] {configuration, true};
       List<CliFunctionResult> jndiCreationResult = executeAndGetFunctionResult(
